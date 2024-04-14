@@ -23,7 +23,6 @@ pub struct ApplicationBrowser {
     pub groups: serde_json::Value,
     pub tree_view: gtk::TreeView,
     pub app_browser_box: gtk::Box,
-    pub button_box: gtk::Box,
     pub back_btn: gtk::Button,
     pub update_system_btn: gtk::Button,
 }
@@ -126,7 +125,6 @@ impl ApplicationBrowser {
             group_tofilter: String::from("*"),
             tree_view: gtk::TreeView::new(),
             app_browser_box,
-            button_box,
             back_btn,
             update_system_btn,
         }
