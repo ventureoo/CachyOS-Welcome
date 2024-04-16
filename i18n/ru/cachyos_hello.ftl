@@ -9,6 +9,7 @@ applications = Приложения
 removed-db-lock = Блокировка БД Pacman была снята!
 lock-doesnt-exist = Pacman БД не заблокирован!
 package-not-installed = Пакет '{$package_name}' не был установлен!
+gaming-package-installed = Игровые пакеты уже установлены!
 
 # Application Browser page
 advanced-btn = дополнительные
@@ -45,6 +46,7 @@ clear-pkgcache-title = Очистить кэш пакетов
 rankmirrors-title = Ранжировать зеркала
 dnsserver-title = Сменить DNS-сервер
 show-kwinw-debug-title = Показать окно отладки kwin(Wayland)
+install-gaming-title = Установить Игровые пакеты
 
 # Main Page (buttons)
 button-about-tooltip = О программе

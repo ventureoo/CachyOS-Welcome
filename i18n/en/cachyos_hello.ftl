@@ -10,6 +10,7 @@ removed-db-lock = Pacman db lock was removed!
 lock-doesnt-exist = Pacman db lock does not exist!
 orphans-not-found = No orphan packages found!
 package-not-installed = Package '{$package_name}' has not been installed!
+gaming-package-installed = Gaming packages already installed!
 
 # Application Browser page
 advanced-btn = advanced
@@ -46,6 +47,7 @@ clear-pkgcache-title = Clear package cache
 rankmirrors-title = Rank mirrors
 dnsserver-title = Change DNS server
 show-kwinw-debug-title = Show kwin(Wayland) debug window
+install-gaming-title = Install Gaming packages
 
 # Main Page (buttons)
 button-about-tooltip = About
