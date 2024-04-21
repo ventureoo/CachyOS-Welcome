@@ -43,38 +43,6 @@ static G_SAVE_JSON: Lazy<Mutex<serde_json::Value>> = Lazy::new(|| {
 static mut G_HELLO_WINDOW: Option<Arc<HelloWindow>> = None;
 
 fn quick_message(message: String) {
-    // Create the widgets
-    let window_ref = unsafe { &G_HELLO_WINDOW.as_ref().unwrap().window };
-    let dialog = gtk::Dialog::builder()
-        .transient_for(window_ref)
-        .title(&message)
-        .modal(true)
-        .expand(true)
-        .destroy_with_parent(true)
-        .build();
-
-    dialog.add_button("_Offline", gtk::ResponseType::No);
-    dialog.add_button(&format!("_Online ({})", fl!("recommended")), gtk::ResponseType::Yes);
-    let content_area = dialog.content_area();
-    let label = gtk::Label::new(Some(&message));
-
-    // Add the label, and show everything we’ve added
-    content_area.add(&label);
-    dialog.show_all();
-
-    let result = dialog.run();
-    let cmd: String;
-    if result == gtk::ResponseType::No {
-        cmd = "/usr/local/bin/calamares-offline.sh".to_owned();
-    } else if result == gtk::ResponseType::Yes {
-        cmd = "/usr/local/bin/calamares-online.sh".to_owned();
-    } else {
-        unsafe {
-            dialog.destroy();
-        }
-        return;
-    }
-
     // Spawn child process in separate thread.
     std::thread::spawn(move || {
         let status = match reqwest::blocking::get("https://cachyos.org") {
@@ -82,7 +50,7 @@ fn quick_message(message: String) {
             _ => false,
         };
 
-        if !status && result == gtk::ResponseType::Yes {
+        if !status {
             let window_ref = unsafe { &G_HELLO_WINDOW.as_ref().unwrap().window };
             let errordialog = gtk::MessageDialog::builder()
                 .transient_for(window_ref)
@@ -95,12 +63,9 @@ fn quick_message(message: String) {
             return;
         }
 
-        Exec::shell(cmd).join().unwrap();
+        let cmd = "/usr/local/bin/calamares-online.sh".to_owned();
+        Exec::cmd(cmd).join().unwrap();
     });
-
-    unsafe {
-        dialog.destroy();
-    }
 }
 
 fn show_about_dialog() {
