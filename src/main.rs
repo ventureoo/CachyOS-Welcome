@@ -43,6 +43,38 @@ static G_SAVE_JSON: Lazy<Mutex<serde_json::Value>> = Lazy::new(|| {
 static mut G_HELLO_WINDOW: Option<Arc<HelloWindow>> = None;
 
 fn quick_message(message: String) {
+    // Create the widgets
+    let window_ref = unsafe { &G_HELLO_WINDOW.as_ref().unwrap().window };
+    let dialog = gtk::Dialog::builder()
+        .transient_for(window_ref)
+        .title(&message)
+        .modal(true)
+        .expand(true)
+        .destroy_with_parent(true)
+        .build();
+
+    dialog.add_button("_Regular", gtk::ResponseType::No);
+    dialog.add_button("_Special(OOB for AI work; NVIDIA only)", gtk::ResponseType::Yes);
+    let content_area = dialog.content_area();
+    let label = gtk::Label::new(Some(&message));
+
+    // Add the label, and show everything we’ve added
+    content_area.add(&label);
+    dialog.show_all();
+
+    let result = dialog.run();
+    let cmd: String;
+    if result == gtk::ResponseType::No {
+        cmd = "/usr/local/bin/calamares-online.sh".to_owned();
+    } else if result == gtk::ResponseType::Yes {
+        cmd = "/usr/local/bin/calamares-ai-edition.sh".to_owned();
+    } else {
+        unsafe {
+            dialog.destroy();
+        }
+        return;
+    }
+
     // Spawn child process in separate thread.
     std::thread::spawn(move || {
         let status = match reqwest::blocking::get("https://cachyos.org") {
@@ -63,9 +95,12 @@ fn quick_message(message: String) {
             return;
         }
 
-        let cmd = "/usr/local/bin/calamares-online.sh".to_owned();
         Exec::cmd(cmd).join().unwrap();
     });
+
+    unsafe {
+        dialog.destroy();
+    }
 }
 
 fn show_about_dialog() {
@@ -468,7 +503,7 @@ fn on_action_clicked(param: &[glib::Value]) -> Option<glib::Value> {
     let widget = param[0].get::<gtk::Widget>().unwrap();
     return match widget.widget_name().as_str() {
         "install" => {
-            quick_message(fl!("calamares-install-type"));
+            quick_message(fl!("installer-edition"));
             None
         },
         "autostart" => {

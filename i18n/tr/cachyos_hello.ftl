@@ -68,7 +68,6 @@ section-project = PROJE
 
 # Main Page (launch installer)
 recommended = Tavsiye edilen
-calamares-install-type = Calamares kurulum tipi
 
 # Main Page (body)
 offline-error = Çevrimiçi kurulum başlatılamadı! Bir internet bağlantısı bulunmuyor.

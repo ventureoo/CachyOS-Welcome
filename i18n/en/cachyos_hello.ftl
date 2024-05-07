@@ -70,7 +70,7 @@ section-project = PROJECT
 
 # Main Page (launch installer)
 recommended = recommended
-calamares-install-type = Calamares install type
+installer-edition = Installer edition
 
 # Main Page (body)
 offline-error = Unable to start online installation! No internet connection
