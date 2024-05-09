@@ -137,6 +137,17 @@ pub fn is_alpm_pkg_installed(package_name: &str) -> bool {
     alpm.localdb().pkg(package_name.as_bytes()).is_ok()
 }
 
+pub fn is_root_on_btrfs() -> bool {
+    let root_fs = Exec::cmd("/sbin/findmnt")
+        .args(&["-ln", "-o", "FSTYPE", "/"])
+        .stdout(Redirection::Pipe)
+        .capture()
+        .unwrap()
+        .stdout_str();
+
+    root_fs == "btrfs\n"
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

@@ -10,6 +10,7 @@ removed-db-lock = Блокировка БД Pacman была снята!
 lock-doesnt-exist = Pacman БД не заблокирован!
 package-not-installed = Пакет '{$package_name}' не был установлен!
 gaming-package-installed = Игровые пакеты уже установлены!
+snapper-package-installed = 'cachyos-snapper-support' пакет уже установлен!
 
 # Application Browser page
 advanced-btn = дополнительные
@@ -47,6 +48,7 @@ rankmirrors-title = Ранжировать зеркала
 dnsserver-title = Сменить DNS-сервер
 show-kwinw-debug-title = Показать окно отладки kwin(Wayland)
 install-gaming-title = Установить Игровые пакеты
+install-snapper-title = Установить поддержку Snapper
 
 # Main Page (buttons)
 button-about-tooltip = О программе
