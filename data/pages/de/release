@@ -1,47 +1,59 @@
-<big>CachyOS 24.03</big>
+<big>CachyOS 24.05</big>
 
-Grüße, CachyOS-Fans!
+Dies ist unsere sechste Veröffentlichung und wir freuen uns sehr, unsere neuen zusätzlichen Funktionen bekannt zu geben.
+Wir führen das Bcachefs-Dateisystem in unserem Installationsprogramm ein. Dies kann derzeit mit einer Root-Installation verwendet werden und wurde sehr gut getestet.
+Bcachefs befindet sich derzeit noch im experimentellen Zustand, dieser wird sich jedoch im Laufe der nächsten großen Kernel-Versionen verbessern. Das Installationsprogramm erkennt automatisch,
+welches Dateisystem installiert ist und die erforderlichen Pakete korrekt konfiguriert und installiert.
 
-Dies ist unser drittes Release im Jahr 2024 und bringt ziemlich große Änderungen.
-Wir lassen unser GNOME-ISO aufgrund mangelnder Wartung und doppelter Tests für jedes Release fallen. Dies soll auch Verwirrung unter den Benutzern über die Netzinstallation vermeiden,
-und unterstützte Desktop-Umgebungen vermeiden, da wir die meisten Desktop-Umgebungen direkt in der Netzinstallation bereitstellen.
+Die nächste neue Funktion ist eine AI SDK-Installation. Diese Installation installiert automatisch alle erforderlichen Pakete, um eine lokale AI Umgebung zu haben.
+Dies erfolgte aufgrund einer Anfrage einer lokalen KI-Enthusiastengruppe und wird weiter verbessert. Derzeit funktioniert diese Installationsmethode nur für CUDA und NVIDIA, wir arbeiten jedoch daran, sie auch für offiziell von ROCm unterstützte Karten einzuführen. Die ROCm-Unterstützung soll zusammen mit der nächsten Version veröffentlicht werden.
 
-Dieses ISO basiert auf Plasma 6 und wird auch Wayland standardmäßig aktiviert haben. Dies sollte keine großen Auswirkungen auf NVIDIA-Benutzer haben, da X11 nach der Installation weiterhin verwendet werden kann.
-Plasma 6 scheint Wayland-mäßig in wirklich guter Verfassung zu sein, und sobald wayland-protocols und NVIDIA das explizite Sync-Protokoll bereitstellen, sollte dies auch für die meisten NVIDIA-Benutzer der Fall sein.
+Zu guter Letzt fügen wir eine experimentelle Handheld-Edition für CachyOS hinzu. Die Deckify Edition richtet automatisch ein Steam Deck-ähnliches Erlebnis ein und installiert alle dafür erforderlichen Gaming-Tools.
+Außerdem freuen wir uns sehr, Ihnen mitteilen zu können, dass diese Version den LAVD Scheduler verwenden wird, der von Valve finanziert wird und die Frametime und 1 %-Lows auf Handhelds dramatisch verbessert.
+Die Deckify Edition wrude auf dem Rog Ally, Lenovo Legion GO und MSI Claw getestet. Auch an der Steam-Deck-Unterstützung wird derzeit gearbeitet, es zeigen sich hier und da jedoch kleinere Probleme, die mit den kommenden Veröffentlichungen behoben werden sollen.
 
-Darüber hinaus bieten wir jetzt neue CDNs als Standard an, von denen eines von einem Community-Nutzer und eines von uns über Cloudflare R2 gehostet wird. Dies sollte die Netzinstallationszeit auf der ganzen Welt massiv verbessern.
+Wir arbeiten auch eng mit der sched-ext-Entwicklung zusammen und testen deren Framework derzeit sehr intensiv. Der Rusty Scheduler hat die Interaktivität wahnsinnig verbessert und wird bereits von vielen Benutzern in unserer Community als Standardplaner mit den systemd-Diensten verwendet.
 
-Calamares wurde auf 3.3.5 umgestellt und wird nun standardmäßig mit QT6 anstelle von QT5 gebaut, um mit Plasma 6 zu folgen.
-Arch hat kürzlich einige Änderungen an mkinitcpio vorgenommen und das frühe Laden von Microcode als Standard aktiviert. Diese Änderungen sind nun auch in unserer Installation für alle Bootloader enthalten.
+Diese Version enthält auch einige Korrekturen für die ISO und Calamares. Der fstrim-Timer ist jetzt korrekt aktiviert, die ISO sperrt den Bildschirm bei der Installation nicht mehr und es wurden einige Korrekturen mit ZFS und dem umount-Modul von Calamares vorgenommen.
 
-Refind hat einige weitere Dateisysteme aktiviert - f2fs und zfs sind nun verfügbar, wenn der Refind-Bootloader ausgewählt ist.
+Mit dieser Version entfernen wir die Offline-Installation aus unserem Installationsprogramm, um zusätzliche Wartungsarbeiten zu vermeiden. Derzeit ist es uns nicht möglich, die gleichen Funktionen für die Offline-Installation und die Online-Installation bereitzustellen. Aus diesem Grund verzichten wir darauf. Wir werden eine ISO online halten, die weiterhin die Offline-Installation beinhaltet, damit Benutzer diese als Fallback verwenden können.
+
+CachyOS stellt auch ein Archiv für die Repositorys „cachyos“, „cachyos-v3“ und „cachyos-v4“ bereit.
+Dieses Archiv kann zum Downgrade der Kernel oder anderer angepasster Pakete aus unserem Repository verwendet werden.
+
+Wir haben auch ein neues Forum eingeführt, schauen Sie sich das gerne an!
+https://discuss.cachyos.org
 
 <big>Features:</big>
 
-- ISO: Plasma 6 wird nun in der ISO ausgeliefert und verwendet Wayland als Standard, GNOME ISO wurde fallen gelassen, um Verwirrung über netinstall zu vermeiden
-- Calamares: Basierung nun auf QT6
-- refind: Hinzufügen von f2fs und zfs als Option einschließlich luks2-Verschlüsselung
-- Mirrors: Wir bieten jetzt 2 globale CDNs an. Eines gehostet von Cloudflare R2 und eines gehostet von Digital Ocean
-- Mirrorlist: Holen Sie das Online-Installationsprogramm direkt vom CDN, um eine schnellere Bereitstellung zu gewährleisten
-- initcpiocfg: Verwendet den neuen Microcode-Hook zum frühen Laden des Ucodes
-- bootloader: Lädt den Microcode nicht mehr mit dem Bootloader
-- Paket-Updates: linux-cachyos 6.7.9, mesa 24.0.2, zfs-utils 2.2.3
+- Dateisysteme: Bcachefs als Dateisystemauswahl hinzugefügt
+- Pacstrap: Erkennung hinzufügen, wenn Bcachefs verwendet wird, und Bcachefs-Tools installieren
+- CachyOS-AI-SDK: Einführung einer neuen Installationsoption für ein OOB NVIDIA SDK-Setup
+- CachyOS-Deckify: Eigene Variante für Handhelds bereitstellen (experimentell)
+- BTRFS: Automatischer Snapper für Schnappschüsse
+- ISO: Offline-Installation löschen
+- Paketaktualisierungen: Python 3.12, gcc 14.1.1, mesa 24.0.6, xwayland 24.1rc2, NVIDIA 550.78
 
 <big>Bug-Fixes:</big>
 
-- pacstrap: Installiert keine Konfigurationspakete, um dem Benutzer eine sauberere Auswahl der Installation zu ermöglichen
-- shellprocess_pacman: Kopiert auch den Rang cachyos-v4-mirrorlists auf das Ziel
+- Settings.conf: Hardware-Erkennung vor Netinstall verschieben
+- pacstrap: Verwenden Sie btrfs-assistant anstelle von btrfs-assistant-git
+- Plymouth: Plymouth-Hook für ZFS + Verschlüsselung entfernen
+- ISO: Fügen Sie verschiedene Konfigurationsdateien für KDE hinzu, um zu vermeiden, dass Sie bei der Installation in Screen-Locker geraten
+- Services-Systemd: fstrim.timer ordnungsgemäß aktivieren
+- umount: Notfall deaktivieren, um Probleme mit der ZFS-Installation zu vermeiden
+- Shellprozess: Reste der Offline-Installation bereinigen
 
 Sie finden den Download auf unseren Spiegelservern auf Sourceforge.
 
 https://mirror.cachyos.org/ISO/
 https://sourceforge.net/projects/cachyos-arch/files/
 
-Wenn Sie uns unterstützen möchten, können Sie spenden, um unsere monatlichen Serverkosten zu decken.
+Ihre Beiträge helfen uns, unsere Server zu warten. Erwägen Sie die Unterstützung von CachyOS durch:
 
 https://paypal.me/pttrr
 https://www.patreon.com/CachyOS
 
 Vielen Dank für Ihre anhaltende Unterstützung!
 
-**Das CachyOS-Team**
+<b>Das CachyOS-Team</b>
