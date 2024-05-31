@@ -234,9 +234,17 @@ fn build_ui(application: &gtk::Application) {
     }
 
     // Create pages
-    let file_pages_path = crate::embed_data::HelloData::iter()
-        .filter(|pkg| pkg.starts_with(&format!("pages/{}", &best_locale)))
-        .collect::<Vec<_>>();
+    let locale_pages_exist = crate::embed_data::HelloData::iter()
+        .any(|x| x.starts_with(&format!("pages/{}", &best_locale)));
+    let file_pages_path = if locale_pages_exist {
+        crate::embed_data::HelloData::iter()
+            .filter(|pkg| pkg.starts_with(&format!("pages/{}", &best_locale)))
+            .collect::<Vec<_>>()
+    } else {
+        crate::embed_data::HelloData::iter()
+            .filter(|pkg| pkg.starts_with("pages/en"))
+            .collect::<Vec<_>>()
+    };
 
     for file_path in file_pages_path {
         // let page_file = HelloData::get(&file_path).unwrap();
@@ -408,9 +416,17 @@ fn set_locale(use_locale: &str) {
     }
 
     // Change content of pages
-    let file_pages_path = crate::embed_data::HelloData::iter()
-        .filter(|pkg| pkg.starts_with(&format!("pages/{}", &use_locale)))
-        .collect::<Vec<_>>();
+    let locale_pages_exist = crate::embed_data::HelloData::iter()
+        .any(|x| x.starts_with(&format!("pages/{}", &use_locale)));
+    let file_pages_path = if locale_pages_exist {
+        crate::embed_data::HelloData::iter()
+            .filter(|pkg| pkg.starts_with(&format!("pages/{}", &use_locale)))
+            .collect::<Vec<_>>()
+    } else {
+        crate::embed_data::HelloData::iter()
+            .filter(|pkg| pkg.starts_with("pages/en"))
+            .collect::<Vec<_>>()
+    };
 
     for file_path in file_pages_path {
         let page_file_name = Path::new(file_path.as_ref()).file_name().unwrap().to_str().unwrap();
