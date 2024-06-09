@@ -1,50 +1,75 @@
-<big>CachyOS 24.05</big>
+<big>CachyOS 24.06</big>
 
-This is our 6th release and we are really excited to announce our newly added features.
-We are now introducing the Bcachefs file system in our installer. This can be used with on a root installation and has been tested quite well.
-Bcachefs is currently still in an experimental state but will improve lot with the next major kernel releases. The installer automatically detects which file system is installed and will correctly configure and install the required packages.
+This is our 7th release this year, and we have once again made significant changes for this release.
 
-The next new feature is an AI SDK Installation. This installation type automatically installs all required packages required to have a local AI Installation.
-This was done due to requests from an Local AI Enthusiasts group and will be further enhanced in the future. For now, this install method only works for CUDA and NVIDIA, but we are also working on introducing this for offical ROCm supported cards. ROCm support is planned to be released together with the next release.
+In the default CachyOS Edition, we have now added support for the T2 MacBook. The configuration needed for required packages is done via the hardware detection.
+The Wi-Fi and Bluetooth will not work out of the box because it's a licensed and closed-source firmware from Apple, which we cannot distribute.
+<a href="https://wiki.cachyos.org/installation/installation_t2macbook/">Here you can find how to get a working Wi-Fi and Bluetooth after the installation.</a>
 
-Last but not least, we are adding an experimental handheld Edition for CachyOS. The Deckify Edition automatically setups a Steam Deck like experience and installs all required Gaming Tools for it.
-We are also proud to announce that this version will use the LAVD Scheduler, which is funded by Valve and improves the Frametime and 1% lows on Handhelds dramatically.
-The Deckify Edition is currently tested on the Rog Ally, Lenovo Legion GO and MSI Claw. Steam Deck support is also being currently worked on, but there are some small issues that should be fixed with upcoming releases. For more information check out following: <a href="https://discuss.cachyos.org/t/information-experimental-cachyos-deckify/203">Deckify information</a>
+The ISO now contains a script called "cachy-chroot", which will guide the user through the chroot process and mounting the partition correctly.
+The script also properly detects subvolumes for BTRFS, and the user will be guided and shown which subvolumes exist. Additionally,
+the ISO now uses the mkinitcpio microcode hook and copytoram support. This means that the ISO gets copied into the user's RAM if there is enough available space.
+This should generally speed up the overall experience when booted into the ISO. The ISO now requires the <a href="https://github.com/ventoy/Ventoy/releases/tag/v1.0.98">latest Ventoy release</a>
 
-We are also working closely together with the sched-ext development team and currently testing their framework a lot. The Rusty Scheduler has made insane improvements for interactivity and is already used by many users in our community as the default scheduler with systemd services.
+For NVIDIA Cards, we have now enabled the services to ensure correct working sleep as default and also the required NVReg settings as default.
+This mainly fixes graphical corruption when using sleep on Wayland. Additionally, we have already pushed the 555 Driver, which supports explicit sync.
+This massively improves the experience on Wayland for users with supported NVIDIA Cards. The compositors have also been patched with explicit sync support.
 
-This release also contains some fixes for the ISO and calamares. The fstrim timer is now correctly enabled, the ISO won't screen lock anymore during installation and some fixes for ZFS and the umount module of calamares.
+We have also made some small changes to the defaults. BTRFS is now the default selected file system instead of XFS.
+The XFS file system and all others can still be selected by the users and configured. The firewalld firewall has been replaced with ufw,
+as it generally provides an easier experience for most users to set up their firewall and open ports.
 
-With this release we are dropping support for the Offline Installer to avoid extra maintenance work. Currently it is not possible for us to provide feature parity for the Offline Installer and thus is the reason for dropping it. We will keep an ISO online, which will still include the Offline Installer, so that users can use this as a fallback.
+The CachyOS Handheld Edition is now considered stable, and we have made numerous adjustments.
+The CachyOS Hardware Detection now includes detection for these devices and configures the system depending on the device.
+The Handheld Edition is currently tested on the Steam Deck, Legion Go, and Rog Ally. Generally, it should also support Ayaneo devices,
+but we have not yet tested this directly. We have contacted the company to get more information about these devices.
+Below you can find more Changelogs for the Handheld Edition.
 
-We have also prepared our repository for the upcoming explicit sync changes from NVIDIA and AMD. Kwin, Mutter, egl-wayland and xorg-xwayland are provided with the patches, which are required for explicit sync.
-The NVIDIA Driver support is expected to be released on May 15, after some internal testing we will push this driver to the repository.
-
-CachyOS now provides an archive for the "cachyos", "cachyos-v3" and "cachyos-v4" repository.
-This archive can be used to downgrade the kernels or other customized packages provided from our repository.
-
-We have introduced a new Forum, feel free to check it out!
-https://discuss.cachyos.org
+Last but not least, we have launched a complete rework of our wiki with a new structure.
+This now provides more information for users. Some pages are not fully complete yet, but these will follow within this month.
+Feel free to check out the new Wiki: https://wiki.cachyos.org/installation/installation_prepare/
 
 <big>Features:</big>
 
-- Filesystems: Introduce Bcachefs as a filesystem option
-- pacstrap: Add detection if Bcachefs is used and install corresponding Bcachefs-tools
-- CachyOS-AI-SDK: Introduce new install option to provide a OOB NVIDIA SDK Setup
-- CachyOS-Deckify: Provide variant for Handhelds (experimental), see <a href="https://discuss.cachyos.org/t/information-experimental-cachyos-deckify/203">here</a> for more details
-- BTRFS: Automatic Snapper for snapshots, can be installed from within the CachyOS hello app.
-- ISO: Drop Offline Installer
-- Package Updates: Python 3.12, gcc 14.1.1, mesa 24.0.6, xwayland 24.1rc2, NVIDIA 550.78
+- chwd: Introduce handheld hardware detection
+- chwd: Introduce T2 MacBook support
+- chwd: Add network driver detection
+- Installation: Added MacBook T2 support
+- ISO: Add cachy-chroot. This is a script that helps the user to chroot into the system.
+- ISO: Switch to Microcode Hooks; this requires using the latest Ventoy release (1.0.98)
+- ISO: Enable copytoram; this no longer needs to be disabled because we don't provide the offline installation anymore
+- filesystem: BTRFS is now the default selected file system
+- netinstall: Use ufw instead of firewalld
+- Calamares: Update Branding Slides
+- Slides: Updated for latest changes
+- Package Updates: linux-cachyos 6.9.3, mesa 24.1.1, xwayland 24.1, NVIDIA 555.52.04, Plasma 6.0.5
 
 <big>Bug-Fixes:</big>
 
-- settings.conf: Move hardware detection before netinstall
-- pacstrap: Use btrfs-assistant instead of btrfs-assistant-git
-- plymouth: remove plymouth hook on zfs + encryption
-- ISO: Add various config files for KDE, to avoid getting screen locking during installation
-- services-systemd: Properly enable fstrim.timer
-- umount: Disable emergency to avoid issues with the zfs installation
-- shellprocess: Cleanup leftovers from the offline installation
+- Calamares: umount: Enable emergency again
+- Qtile: Multimedia Controls are now working correctly
+- NVIDIA: Enable required services and options for working sleep on Wayland
+- netinstall: Remove b43-fwcutter from installation
+- netinstall: Replace hyprland-git with hyprland
+- netinstall: Drop linux-cachyos-lts from selection to avoid issues with missing modules
+- Calamares: Shellprocess: Move mirror ranking before installing keyring
+
+<big>Changelog from Experimental Handheld Release:</big>
+
+- Default to KDE Vapor Theme (SteamOS Theme)
+- Default file system: BTRFS
+- Default kernel: linux-cachyos-deckify
+- SDDM now uses Wayland
+- Environment Flag for HHD to reduce latency
+- Added Kernel Arguments to improve Game Mode Switching behavior
+- The username can now be edited
+- Hardware Detection configures and installs required packages depending on the device used
+- Mallit Keyboard now uses Dark Mode
+- Valve's Powerbuttond for proper sleeping
+- Shortcuts can now be added to Steam
+- Updated scx-scheds to latest git commit, providing the latest enhancements for the LAVD Scheduler
+- Added automount to cachyos-handheld
+- CachyOS can now perform Steam Deck BIOS updates on the Steam Deck
 
 You can find the download at our mirrors on sourceforge.
 
