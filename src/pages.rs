@@ -1061,7 +1061,7 @@ fn on_appbtn_clicked(button: &gtk::Button) {
     let mut exe_path =
         Exec::cmd("which").arg(binname).stdout(Redirection::Pipe).capture().unwrap().stdout_str();
     exe_path.pop();
-    let bash_cmd = format!("{}", &exe_path);
+    let bash_cmd = format!("{} &disown", &exe_path);
 
     // Create context channel.
     let (tx, rx) = glib::MainContext::channel(glib::Priority::default());
