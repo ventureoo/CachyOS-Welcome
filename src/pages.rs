@@ -533,7 +533,7 @@ fn create_apps_section() -> Option<gtk::Box> {
     label.set_text(&fl!("applications"));
 
     // Check first btn.
-    if Path::new("/sbin/cachyos-pi-bin").exists() {
+    if Path::new("/sbin/cachyos-pi").exists() {
         let cachyos_pi = gtk::Button::with_label("CachyOS PackageInstaller");
         cachyos_pi.connect_clicked(on_appbtn_clicked);
         box_collection.pack_start(&cachyos_pi, true, true, 2);
