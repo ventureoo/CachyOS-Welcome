@@ -1043,12 +1043,12 @@ fn on_clear_pkgcache_btn_clicked(_: &gtk::Button) {
 fn on_appbtn_clicked(button: &gtk::Button) {
     // Get button label.
     let name = button.label().unwrap();
-    let (binname, is_sudo) = if name == "CachyOS PackageInstaller" {
-        ("cachyos-pi", false)
+    let binname = if name == "CachyOS PackageInstaller" {
+        "cachyos-pi"
     } else if name == "CachyOS Kernel Manager" {
-        ("cachyos-kernel-manager", false)
+        "cachyos-kernel-manager"
     } else {
-        ("", false)
+        ""
     };
 
     // Check if executable exists.
@@ -1057,43 +1057,18 @@ fn on_appbtn_clicked(button: &gtk::Button) {
         return;
     }
 
-    let mut envs = String::new();
-    for env in glib::listenv() {
-        if env == "PATH" {
-            envs += "PATH=/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin ";
-            continue;
-        }
-        if let Some(env) = env.to_str() {
-            const env_exceptions: &[&str] =
-                &["LESS", "LS", "HIST", "FZF", "CARGO", "RUST", "KITTY", "PROMPT"];
-            if env_exceptions.iter().any(|x| env.starts_with(x)) {
-                continue;
-            }
-        }
-        let _ = write!(
-            envs,
-            "{}=\"{}\" ",
-            env.to_str().unwrap(),
-            glib::getenv(&env).unwrap().to_str().unwrap()
-        );
-    }
-
     // Get executable path.
     let mut exe_path =
         Exec::cmd("which").arg(binname).stdout(Redirection::Pipe).capture().unwrap().stdout_str();
     exe_path.pop();
-    let bash_cmd = format!("{} {}", &envs, &exe_path);
+    let bash_cmd = format!("{}", &exe_path);
 
     // Create context channel.
     let (tx, rx) = glib::MainContext::channel(glib::Priority::default());
 
     // Spawn child process in separate thread.
     std::thread::spawn(move || {
-        let exit_status = if is_sudo {
-            Exec::cmd("/sbin/pkexec").arg("bash").arg("-c").arg(bash_cmd).join().unwrap()
-        } else {
-            Exec::shell(bash_cmd).join().unwrap()
-        };
+        let exit_status = Exec::shell(bash_cmd).join().unwrap();
         tx.send(format!("Exit status successfully? = {:?}", exit_status.success()))
             .expect("Couldn't send data to channel");
     });
