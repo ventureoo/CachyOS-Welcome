@@ -1044,7 +1044,7 @@ fn on_appbtn_clicked(button: &gtk::Button) {
     // Get button label.
     let name = button.label().unwrap();
     let (binname, is_sudo) = if name == "CachyOS PackageInstaller" {
-        ("cachyos-pi-bin", true)
+        ("cachyos-pi", false)
     } else if name == "CachyOS Kernel Manager" {
         ("cachyos-kernel-manager", false)
     } else {
