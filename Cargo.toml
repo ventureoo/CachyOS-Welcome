@@ -16,9 +16,9 @@ i18n-embed = { version = "0.14", features = ["fluent-system", "desktop-requester
 i18n-embed-fl = "0.8"
 rust-embed = { version = "8", features = ["debug-embed", "include-exclude"] }
 gtk = { version = "0.18", default-features = false }
-gio = { version = "0.19", default-features = false }
-gdk-pixbuf = "0.19"
-glib = { default-features = false, version = "0.19" }
+gio = { version = "0.20", default-features = false }
+gdk-pixbuf = "0.20"
+glib = { default-features = false, version = "0.20" }
 serde = { version = "1", default-features = false }
 serde_json = "1"
 reqwest = { version = "0.12", features = ["blocking"] }
