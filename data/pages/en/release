@@ -67,13 +67,9 @@ We have also started working on our own installer framework and a GUI installer,
 
 <big>Manual changes for existing users:</big>
 
-- Added configuration file to apply different scaling, '/home/$USER/.config/deckscale
-- Make GameMode switching more robust
-- Updated Wifi/Bluetooth Firmware for Steam Deck
-- Implemented Auto Mount for GameMode
-- Added gamescope-session quirks for Wine CPU Topology, HDR, and Backlight
-- Fixed Refresh Rate Selection
-- Updated jupiter-hw-support, steamdeck-dsp, jupiter-fan-control, gamescope-session-git
+CachyOS is a rolling system, so updating the system via 'sudo pacman -Syu' is most of the time enough.
+Since we have introduced a new repository, new user with a Zen 4 CPU might want to migrate, here you can find an instruction to do this:
+https://discuss.cachyos.org/t/zen-4-5-optimized-repository-testing/713
 
 <big>Download:</big>
 
