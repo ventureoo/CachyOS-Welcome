@@ -1,85 +1,96 @@
-<big>CachyOS 24.06</big>
+<big>CachyOS 24.07</big>
 
-Dies ist unser 7. Release in diesem Jahr, und wir haben erneut signifikante Änderungen für dieses Release vorgenommen.
+Dies ist unsere achte Veröffentlichung in diesem Jahr, und wir sind sehr stolz, ein neues optimiertes Repository ankündigen zu können.
+Ab dieser Veröffentlichung stellen wir ein **Zen4** optimiertes Repository bereit. Dieses Repository wird bei neuen Installationen für Zen4- und Zen5-CPUs automatisch verwendet, um die bestmögliche Leistung zu gewährleisten.
 
-In der Standard-CachyOS-Edition haben wir nun Unterstützung für das T2-MacBook hinzugefügt. Die Konfiguration der erforderlichen Pakete erfolgt über die Hardware-Erkennung.
-Wi-Fi und Bluetooth funktionieren nicht von Haus aus, da es sich um eine lizenzierte und geschlossene Firmware von Apple handelt, die wir nicht weitergeben können.
-<a href="https://wiki.cachyos.org/installation/installation_t2macbook/">Hier erfahren Sie, wie Sie nach der Installation funktionierendes Wi-Fi und Bluetooth erhalten.</a>
+Das znver4-Target bietet eine Vielzahl zusätzlicher avx512-Erweiterungen und anderer Instruktionen. Hier finden Sie eine Liste der zusätzlichen vom Compiler verwendeten Instruktionen:
+`abm, adx, aes, avx512bf16, avx512bitalg, avx512ifma, avx512vbmi, avx512vbmi2, avx512vnni, avx512vpopctndq, clflushopt, clwb, clzero, fsgsbase, gfni, mwaitx, pclmul, pku. prfchw, rpdid, rdrnd, rdseed, sha, sse4a, vaes, vockmulqdq, wbnoinvd, savec, xsaveopt, xsaves`
 
-Das ISO enthält nun ein Skript namens „cachy-chroot“, das den Benutzer durch den chroot-Prozess und das korrekte Mounten der Partition führt.
-Das Skript erkennt auch Subvolumes für BTRFS und zeigt dem Benutzer, welche Subvolumes existieren. Zusätzlich verwendet das ISO jetzt den mkinitcpio-Microcode-Hook und copytoram-Unterstützung.
-Das bedeutet, dass das ISO in den Arbeitsspeicher des Benutzers kopiert wird, wenn genügend Platz vorhanden ist. Dies sollte das Booten des ISOs im Allgemeinen beschleunigen.
-Das ISO erfordert nun die <a href="https://github.com/ventoy/Ventoy/releases/tag/v1.0.98">neueste Ventoy-Version</a>
+Das CachyOS-Hardware-Erkennungstool (chwd) kann nun "GC" für AMD-Karten erkennen. Dadurch können wir offiziell ROCm-unterstützte Karten in unserer AI-SDK-Installationsvariante automatisch unterstützen und so konfigurieren, dass sie out-of-the-box für allgemeine KI-Anwendungen und -Nutzungen funktionieren. Wir arbeiten weiterhin mit KI-Enthusiasten zusammen, um die vorinstallierten Pakete und die ausgelieferte Konfiguration in unserer AI-SDK-Installationsvariante zu verbessern. Darüber hinaus wird chwd nun den libva-Treiber als Standard für unterstützte Nvidia-Hardware konfigurieren und die Variable korrekt im Profil exportieren.
 
-Für NVIDIA-Karten haben wir nun die Dienste aktiviert, um den korrekten Ruhezustand als Standard zu gewährleisten, und auch die erforderlichen NVReg-Einstellungen als Standard.
-Dies behebt hauptsächlich grafische Korruption bei der Verwendung von Sleep auf Wayland. Zusätzlich haben wir den 555-Treiber veröffentlicht, der explizite Synchronisation unterstützt.
-Dies verbessert das Erlebnis auf Wayland für Benutzer mit unterstützten NVIDIA-Karten erheblich. Die Kompositeure wurden auch mit Unterstützung für explizite Synchronisation gepatcht.
+Unser Standard-Kernel (linux-cachyos) und sched-ext-Kernel (linux-cachyos-sched-ext) haben jetzt ein Debug-Paket im Repository, das zur Fehlerbehebung bei Kernelproblemen oder zu Entwicklungszwecken verwendet werden kann.
 
-Wir haben auch einige kleine Änderungen an den Standardeinstellungen vorgenommen. BTRFS ist jetzt das standardmäßig ausgewählte Dateisystem anstelle von XFS.
-Das XFS-Dateisystem und alle anderen können weiterhin von den Benutzern ausgewählt und konfiguriert werden.
-Die firewalld-Firewall wurde durch ufw ersetzt, da diese den meisten Benutzern eine einfachere Einrichtung der Firewall und das Öffnen von Ports bietet.
+Unsere Kernel unterstützen jetzt die "AMD CPB Boost"-Funktion, mit der das Boosting pro Kern aktiviert oder deaktiviert werden kann. Der power-profiles-daemon (ppd) übernimmt dies jetzt automatisch, wenn das "Energiespar"-Profil verwendet wird. Es setzt auch die niedrigste lineare Frequenz auf eine höhere Frequenz, sodass es bei Leerlauf des CPUs zu weniger Frequenzabfällen kommt. Dies ist im "ausgewogenen" und "leistungsstarken" Modus aktiv. Das Halten der niedrigsten linearen Frequenz verbessert sowohl die Latenz als auch die 1%-Lows beim Gaming.
 
-Die CachyOS-Handheld-Edition wird nun als stabil betrachtet, und wir haben zahlreiche Anpassungen vorgenommen.
-Die CachyOS-Hardwareerkennung umfasst nun die Erkennung dieser Geräte und konfiguriert das System entsprechend.
-Die Handheld-Edition wird derzeit auf dem Steam Deck, Legion Go und Rog Ally getestet.
-Allgemein sollte sie auch Ayaneo-Geräte unterstützen, aber wir haben dies noch nicht direkt getestet.
-Wir haben das Unternehmen kontaktiert, um weitere Informationen über diese Geräte zu erhalten. Unten finden Sie weitere Änderungsprotokolle für die Handheld-Edition.
+Der Kernel-Manager hat jetzt eine GUI zur Verwaltung des sched-ext-Schedulers. Benutzer können nun einfach den scx-Dienst aktivieren/deaktivieren, zwischen verschiedenen sched-ext-Schedulern wechseln und auch Befehlszeilenflags für diese setzen.
 
-Zu guter Letzt haben wir unser Wiki komplett überarbeitet und neu strukturiert.
-Es bietet nun mehr Informationen für Benutzer. Einige Seiten sind noch nicht vollständig, aber diese werden im Laufe dieses Monats folgen.
-Schauen Sie sich gerne das neue Wiki an: https://wiki.cachyos.org/installation/installation_prepare/
+Der Userspace-Kernel-Samepage-Merging-Daemon wurde entfernt, da er eine recht hohe CPU-Auslastung auf schwächeren CPUs hatte. Wir haben uksmd durch die Übernahme der "MemoryKSM"-Funktion von systemd ersetzt. Dies kann jetzt einfach mit dem Befehl "ksmctl --enable" aktiviert werden.
+
+Cutefish wurde aus der Desktop-Auswahl entfernt, da es seit über ~1,5 Jahren nicht mehr gepflegt wurde und wir keinen weiteren Support dafür bieten können. Benutzer können es jedoch weiterhin aus den Repositories installieren.
+
+kwin wurde für Tearingsupport gepatcht.
+
+Es gibt drei neue Ergänzungen zu den CachyOS-Mirrors. Zwei befinden sich in China und werden von der TUNA-Universität mit 20 Gbit Konnektivität gehostet, der zweite wird von einem Teammitglied in Österreich mit 2,5 Gbit gehostet und der dritte wird vom eScience Center, Nanjing University in China, gehostet. Vielen Dank an alle Mirror-Hosts, die die Verfügbarkeit für alle Benutzer weltweit weiter erhöhen.
+
+Calamares basiert jetzt auf der neuesten Version 3.3.8, und wir haben eine Reihe von Fehlerbehebungen zur Installation hinzugefügt. Die Spiegel-Rangfolge für die Basisinstallation verwendet nun nur noch Tier-1-Spiegel von Arch Linux. Das neueste archlinux-keyring wird vor Beginn der Installation installiert, um Probleme mit dem archlinux-keyring zu vermeiden. Nicht verwendete CachyOS-Repositories werden nun aus der Konfiguration entfernt, und der Kernel-Parameter `copytoram` wurde von 'yes' auf 'auto' geändert, um Probleme auf Maschinen mit weniger RAM zu vermeiden.
+
+Darüber hinaus sieht der 6.10-Kernel vielversprechend aus und sollte bald in unsere Repositories gelangen. Ebenso befindet sich der neue Nvidia-Treiber in einem guten Zustand, und wir haben die GSP-Firmware wieder aktiviert.
+
+Wir haben auch begonnen, an unserem eigenen Installations-Framework und einem GUI-Installer zu arbeiten. Stay tuned!
 
 <big>Features:</big>
 
-- chwd: Einführung der Handheld-Hardwareerkennung
-- chwd: Einführung der T2-MacBook-Unterstützung
-- chwd: Hinzufügen der Netzwerktreiber-Erkennung
-- Installation: MacBook T2-Unterstützung hinzugefügt
-- ISO: Hinzufügen von cachy-chroot. Dies ist ein Skript, das dem Benutzer hilft, in das System zu chrooten.
-- ISO: Wechsel zu Microcode-Hooks; dies erfordert die Verwendung der neuesten Ventoy-Version (1.0.98)
-- ISO: Aktivieren von copytoram; dies muss nicht mehr deaktiviert werden, da wir keine Offline-Installation mehr anbieten
-- Dateisystem: BTRFS ist jetzt das standardmäßig ausgewählte Dateisystem
-- netinstall: Verwendung von ufw anstelle von firewalld
-- Slides: Aktualisiert für die neuesten Änderungen
-- Paket-Updates: linux-cachyos 6.9.3, mesa 24.1.1, xwayland 24.1, NVIDIA 555.52.04, Plasma 6.0.5
+- Repository: Einführung eines Zen 4 optimierten Repositorys, das für Zen4- und Zen5-CPUs verwendet wird
+- ISO: Hinzufügen einer automatischen Architekturprüfung für das Zen4/Zen5-Repository
+- chwd: Hinzufügen der GC-Unterstützung für AMD-GPUs, dies hilft bei der Erkennung offiziell unterstützter ROCm-GPUs
+- chwd: Verwenden des libva-nvidia-Treibers auf unterstützten Karten
+- ksmctl: Einführung eines Tools zum Aktivieren/Deaktivieren von KSM: ksmctl --enable
+- kernel: Für den "linux-cachyos"-Kernel ist jetzt ein "linux-cachyos-dbg"-Paket verfügbar, das ein unstripped vmlinux für Debugging-Zwecke enthält
+- kernel: AMD CPB-Boost ist jetzt verfügbar und der power-profiles-daemon ist gepatcht. Wenn das "Energiespar"-Profil eingestellt ist, wird das Boosting auf AMD-CPUs deaktiviert
+- kernel: Hinzufügen eines Energiespar-Patches für AMD-SoCs für Videowiedergabe
+- kernel-manager: Hinzufügen der Unterstützung zur Verwaltung von sched-ext-Schedulern und Abrufen von Informationen über die GUI
+- steam/proton: Es gibt jetzt ein "game-performance"-Skript, das zu den Startoptionen von Steam hinzugefügt werden kann
+- power-profiles: Bei AMD Pstate-unterstützten CPUs wird die niedrigste lineare Frequenz jetzt höher eingestellt, was die Latenz und 1%-Lows verbessern kann
+- kwin: Hinzufügen eines Back-Ports für Tearing, der getestet wurde. Bei NVIDIA funktioniert es nur bei nativen Wayland-Anwendungen
+- netinstall: Cutefish wurde als installierbare Desktop-Umgebung entfernt
+- Spiegel: Hinzufügen von Spiegeln in Österreich und China, der China-Spiegel wird von der TUNA-Universität gehostet. Dies sollte vielen Benutzern aus China helfen
+- Paket-Updates: linux-cachyos 6.9.9, mesa 24.1.3, NVIDIA 555.58.02, Plasma 6.1.2, LLVM 18.1.8
 
 <big>Bug-Fixes:</big>
 
-- Calamares: umount: Notfall wieder aktiviert
-- Qtile: Multimedia-Steuerungen funktionieren jetzt korrekt
-- NVIDIA: Erforderliche Dienste und Optionen für funktionierenden Sleep auf Wayland aktiviert
-- netinstall: Entfernen von b43-fwcutter aus der Installation
-- netinstall: Ersetzen von hyprland-git durch hyprland
-- netinstall: Entfernen von linux-cachyos-lts aus der Auswahl, um Probleme mit fehlenden Modulen zu vermeiden
-- Calamares: Shellprocess: Spiegel-Ranking vor der Installation des Keyrings verschieben
+- ISO: Setze copytoram auf automatisch statt auf ja
+- Installationsstart: Installiere das neueste archlinux-keyring, bevor die Installation beginnt, um Probleme beim Abrufen des archlinux-keyring im chroot zu vermeiden
+- Spiegel-Rangfolge: Rangfolge nur für Tier-1-Spiegel zur Installationszeit
+- pacman.conf: Entfernen nicht verwendeter pacman-Repositories
+- cachy-chroot: Zeige keine .snapshot-Untervolumes an
+- Calamares: Verwenden Sie nicht das Modul "Preservefiles", da Benutzer von Problemen berichten
 
-<big>Änderungsprotokoll der experimentellen Handheld-Version:</big>
+<big>Changelog für die Handheld-Edition:</big>
 
-- Standardmäßig das KDE-Vapor-Theme (SteamOS-Theme)
-- Standard-Dateisystem: BTRFS
-- Standard-Kernel: linux-cachyos-deckify
-- SDDM verwendet jetzt Wayland
-- Umgebungsflag für HHD zur Reduzierung der Latenz
-- Hinzufügen von Kernel-Argumenten zur Verbesserung des Game-Mode-Switching
-- Der Benutzername kann jetzt bearbeitet werden
-- Hardware-Erkennung konfiguriert und installiert erforderliche Pakete abhängig vom verwendeten Gerät
-- Mallit-Tastatur verwendet jetzt den Dunkelmodus
-- Valve's Powerbuttond für ordnungsgemäßen Schlafmodus
-- Verknüpfungen können jetzt zu Steam hinzugefügt werden
-- Aktualisierte scx-scheds auf den neuesten Git-Commit, der die neuesten Verbesserungen für den LAVD-Scheduler bietet
-- Hinzufügen von Automount zu cachyos-handheld
-- CachyOS kann jetzt BIOS-Updates des Steam Deck ausführen
+- Hinzufügen einer Konfigurationsdatei zum Anwenden verschiedener Skalierungen, '/home/$USER/.config/deckscale'
+- Machen Sie den GameMode-Wechsel robuster
+- Aktualisierte Wifi/Bluetooth-Firmware für Steam Deck
+- Implementierung von Auto Mount für GameMode
+- Hinzufügen von gamescope-session-Quirks für Wine-CPU-Topologie, HDR und Hintergrundbeleuchtung
+- Fehlerbehebung bei der Bildwiederholfrequenz-Auswahl
+- Aktualisiert jupiter-hw-support, steamdeck-dsp, jupiter-fan-control, gamescope-session-git
 
-Sie finden den Download auf unseren Spiegelservern auf Sourceforge.
+**Manuelle Änderungen für bestehende Benutzer:**
 
-https://mirror.cachyos.org/ISO/
-https://sourceforge.net/projects/cachyos-arch/files/
+CachyOS ist ein rolling System, daher reicht das Aktualisieren des Systems über 'sudo pacman -Syu' meistens aus.
+Da wir ein neues Repository eingeführt haben, möchten neue Benutzer mit einer Zen 4 CPU möglicherweise migrieren. Hier finden Sie eine Anleitung dazu:
+https://discuss.cachyos.org/t/zen-4-5-optimized-repository-testing/713?u=ptr1337
 
-Ihre Beiträge helfen uns, unsere Server zu warten. Erwägen Sie die Unterstützung von CachyOS durch:
+<big>Download:</big>
 
-https://paypal.me/pttrr
-https://www.patreon.com/CachyOS
+Laden Sie Ihre Kopie des neuesten ISO von unseren Spiegeln auf SourceForge herunter:
 
-Vielen Dank für Ihre anhaltende Unterstützung!
+* CDN: https://iso.cachyos.org/240714/cachyos-desktop-linux-240714.iso
+* Deutschland: https://mirror.cachyos.org/ISO/240714/cachyos-desktop-linux-240714.iso
+* USA: https://us.cachyos.org/ISO/240714/cachyos-desktop-linux-240714.iso
+* China: https://mirrors.tuna.tsinghua.edu.cn/cachyos/240714/cachyos-desktop-linux-240714.iso
+* https://sourceforge.net/projects/cachyos-arch/files
+
+Handheld Edition:
+* https://iso.cachyos.org/240714/cachyos-handheld-linux-240714.iso
+
+**Unterstützen Sie uns:**
+
+Ihre Beiträge helfen uns, unsere Server zu warten. Erwägen Sie, CachyOS zu unterstützen über:
+
+* PayPal: https://paypal.me/pttrr
+* Patreon: https://www.patreon.com/CachyOS
+
+Vielen Dank für Ihre Unterstützung!
 
 <b>Das CachyOS-Team</b>
