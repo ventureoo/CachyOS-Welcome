@@ -1,4 +1,3 @@
-#![feature(const_str_from_utf8)]
 #![feature(string_remove_matches)]
 #![allow(non_upper_case_globals)]
 #![allow(clippy::arc_with_non_send_sync)]
