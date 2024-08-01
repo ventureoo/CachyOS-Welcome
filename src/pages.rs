@@ -390,7 +390,10 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
             .text(msg.msg)
             .title(msg.msg_type.to_string())
             .modal(true)
+            .buttons(gtk::ButtonsType::Ok)
             .build();
+        dialog.connect_response(|dialog, _| dialog.close());
+
         dialog.show();
         glib::ControlFlow::Continue
     });
@@ -715,7 +718,10 @@ fn create_connections_section() -> gtk::Box {
             .text(msg.msg)
             .title(msg.msg_type.to_string())
             .modal(true)
+            .buttons(gtk::ButtonsType::Ok)
             .build();
+        dialog.connect_response(|dialog, _| dialog.close());
+
         dialog.show();
         glib::ControlFlow::Continue
     });
@@ -978,7 +984,10 @@ fn on_servbtn_clicked(button: &gtk::CheckButton) {
                 .text(fl!("package-not-installed", package_name = alpm_package_name))
                 .title("Error")
                 .modal(true)
+                .buttons(gtk::ButtonsType::Ok)
                 .build();
+            dialog.connect_response(|dialog, _| dialog.close());
+
             dialog.show();
         }
         glib::ControlFlow::Continue

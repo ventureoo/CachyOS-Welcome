@@ -57,7 +57,10 @@ fn quick_message(message: String) {
                 .text(fl!("offline-error"))
                 .title(message)
                 .modal(true)
+                .buttons(gtk::ButtonsType::Ok)
                 .build();
+            errordialog.connect_response(|dialog, _| dialog.close());
+
             errordialog.show();
             return;
         }
