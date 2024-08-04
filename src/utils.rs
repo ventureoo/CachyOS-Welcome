@@ -10,6 +10,7 @@ pub enum PacmanWrapper {
     Pak,
     Yay,
     Paru,
+    Aura,
     Pacman,
 }
 

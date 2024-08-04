@@ -1025,9 +1025,7 @@ fn on_refreshkeyring_btn_clicked(_: &gtk::Button) {
 
 fn on_update_system_btn_clicked(_: &gtk::Button) {
     let (cmd, escalate) = match utils::get_pacman_wrapper() {
-        PacmanWrapper::Pak => ("pak -Syu", false),
-        PacmanWrapper::Yay => ("yay -Syu", false),
-        PacmanWrapper::Paru => ("paru --removemake -Syu", false),
+        PacmanWrapper::Aura => ("aura -Syu && aura -Akaxu", false),
         _ => ("pacman -Syu", true),
     };
     // Spawn child process in separate thread.
