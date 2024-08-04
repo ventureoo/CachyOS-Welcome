@@ -121,7 +121,9 @@ pub fn run_cmd_terminal(cmd: String, escalate: bool) -> bool {
 
 #[inline]
 pub fn get_pacman_wrapper() -> PacmanWrapper {
-    if Path::new("/sbin/pak").exists() {
+    if Path::new("/sbin/aura").exists() {
+        return PacmanWrapper::Aura;
+    } else if Path::new("/sbin/pak").exists() {
         return PacmanWrapper::Pak;
     } else if Path::new("/sbin/yay").exists() {
         return PacmanWrapper::Yay;
