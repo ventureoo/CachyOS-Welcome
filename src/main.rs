@@ -14,24 +14,24 @@ mod utils;
 
 use config::{APP_ID, PROFILE, VERSION};
 use data_types::*;
-use gtk::glib::GString;
-use gtk::{gdk, glib, Builder, HeaderBar, Window};
-use i18n_embed::DesktopLanguageRequester;
-use once_cell::sync::Lazy;
+use utils::*;
+
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
-use unic_langid::LanguageIdentifier;
-use utils::*;
+use std::{fs, str};
 
 use gtk::gio::prelude::*;
 use gtk::prelude::*;
 
 use gtk::gdk_pixbuf::Pixbuf;
-
+use gtk::glib::GString;
+use gtk::{gdk, glib, Builder, HeaderBar, Window};
+use i18n_embed::DesktopLanguageRequester;
+use once_cell::sync::Lazy;
 use serde_json::json;
-use std::{fs, str};
 use subprocess::Exec;
+use unic_langid::LanguageIdentifier;
 
 const RESPREFIX: &str = "/org/cachyos/hello";
 

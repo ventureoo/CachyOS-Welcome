@@ -1,13 +1,13 @@
+use crate::config::{APP_ID, PKGDATADIR, VERSION};
+use crate::widgets::MainWindow;
+
+use std::path::Path;
+
 use gtk::gio;
 use gtk::glib::{self, clone, WeakRef};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use once_cell::sync::OnceCell;
-
-use std::path::Path;
-
-use crate::config::{APP_ID, PKGDATADIR, VERSION};
-use crate::widgets::MainWindow;
 /*
 mod imp {
     use super::*;

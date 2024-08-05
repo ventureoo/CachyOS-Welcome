@@ -1,6 +1,8 @@
 use crate::alpm_helper::*;
 use crate::{fl, utils};
 
+use std::sync::Mutex;
+
 use gtk::gio::prelude::*;
 use gtk::prelude::{
     BoxExt, ButtonExt, CellRendererExt, CellRendererTextExt, CellRendererToggleExt, ComboBoxExt,
@@ -10,7 +12,6 @@ use gtk::prelude::{
 };
 
 use once_cell::sync::Lazy;
-use std::sync::Mutex;
 
 #[derive(Debug)]
 pub struct ApplicationBrowser {

@@ -1,7 +1,8 @@
-use gtk::prelude::*;
 use std::fs::File;
 use std::path::Path;
 use std::{fs, slice, str};
+
+use gtk::prelude::*;
 
 use subprocess::{Exec, Redirection};
 
