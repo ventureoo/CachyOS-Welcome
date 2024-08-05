@@ -13,7 +13,7 @@ fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
 
     let status = Command::new("glib-compile-resources")
-        .arg(&format!("--target={}/cachyos-welcome.gresource", out_dir))
+        .arg(format!("--target={}/cachyos-welcome.gresource", out_dir))
         .arg("cachyos-welcome.gresource.xml")
         .status()
         .unwrap();
