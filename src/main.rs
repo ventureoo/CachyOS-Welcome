@@ -51,17 +51,12 @@ fn quick_message(message: String) {
 
         if !status {
             let window_ref = unsafe { &G_HELLO_WINDOW.as_ref().unwrap().window };
-            let errordialog = gtk::MessageDialog::builder()
-                .transient_for(window_ref)
-                .message_type(gtk::MessageType::Error)
-                .text(fl!("offline-error"))
-                .title(message)
-                .modal(true)
-                .buttons(gtk::ButtonsType::Ok)
-                .build();
-            errordialog.connect_response(|dialog, _| dialog.close());
-
-            errordialog.show();
+            utils::show_simple_dialog(
+                window_ref,
+                gtk::MessageType::Error,
+                &fl!("offline-error"),
+                message,
+            );
             return;
         }
 
