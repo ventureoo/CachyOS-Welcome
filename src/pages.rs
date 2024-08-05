@@ -232,6 +232,7 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
     let dnsserver_btn = gtk::Button::with_label(&fl!("dnsserver-title"));
     let install_gaming_btn = gtk::Button::with_label(&fl!("install-gaming-title"));
     let install_snapper_btn = gtk::Button::with_label(&fl!("install-snapper-title"));
+    let install_spoof_dpi_btn = gtk::Button::with_label(&fl!("install-spoof-dpi-title"));
 
     {
         removelock_btn.set_widget_name("remove-lock-title");
@@ -244,6 +245,7 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
         dnsserver_btn.set_widget_name("dnsserver-title");
         install_gaming_btn.set_widget_name("install-gaming-title");
         install_snapper_btn.set_widget_name("install-snapper-title");
+        install_spoof_dpi_btn.set_widget_name("install-spoof-dpi-title");
     }
 
     // Create context channel.
@@ -253,6 +255,7 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
     let dialog_tx_clone = dialog_tx.clone();
     let dialog_tx_gaming = dialog_tx.clone();
     let dialog_tx_snapper = dialog_tx.clone();
+    let dialog_tx_spoof = dialog_tx.clone();
     removelock_btn.connect_clicked(move |_| {
         let dialog_tx_clone = dialog_tx_clone.clone();
         std::thread::spawn(move || {
@@ -367,6 +370,24 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
         let stack: gtk::Stack = builder.object("stack").unwrap();
         stack.set_visible_child_name(&format!("{name}page"));
     }));
+    install_spoof_dpi_btn.connect_clicked(move |_| {
+        let dialog_tx_spoof_dpi = dialog_tx_spoof.clone();
+        // Spawn child process in separate thread.
+        std::thread::spawn(move || {
+            const alpm_package_name: &str = "spoof-dpi-bin";
+            if !utils::is_alpm_pkg_installed(alpm_package_name) {
+                let _ = utils::run_cmd_terminal(format!("pacman -S {alpm_package_name}"), true);
+            } else {
+                dialog_tx_spoof_dpi
+                    .send(DialogMessage {
+                        msg: fl!("spoof-dpi-package-installed"),
+                        msg_type: gtk::MessageType::Info,
+                        action: Action::InstallSnapper,
+                    })
+                    .expect("Couldn't send data to channel");
+            }
+        });
+    });
 
     // Setup receiver.
     let removelock_btn_clone = removelock_btn.clone();
@@ -410,6 +431,7 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
         button_box_t.pack_end(&install_snapper_btn, true, true, 2);
     }
     button_box_t.pack_end(&install_gaming_btn, true, true, 2);
+    button_box_frth.pack_end(&install_spoof_dpi_btn, true, true, 2);
     button_box_frth.pack_end(&dnsserver_btn, true, true, 2);
     button_box_f.set_halign(gtk::Align::Fill);
     button_box_s.set_halign(gtk::Align::Fill);
