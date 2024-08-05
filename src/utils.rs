@@ -151,6 +151,25 @@ pub fn is_root_on_btrfs() -> bool {
     root_fs == "btrfs\n"
 }
 
+pub fn show_simple_dialog(
+    widget_window: &gtk::Window,
+    dialog_msg_type: gtk::MessageType,
+    dialog_text: &String,
+    dialog_title: String,
+) {
+    let dialog = gtk::MessageDialog::builder()
+        .transient_for(widget_window)
+        .message_type(dialog_msg_type)
+        .text(dialog_text)
+        .title(dialog_title)
+        .modal(true)
+        .buttons(gtk::ButtonsType::Ok)
+        .build();
+    dialog.connect_response(|dialog, _| dialog.close());
+
+    dialog.show();
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

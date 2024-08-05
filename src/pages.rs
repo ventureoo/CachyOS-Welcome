@@ -408,17 +408,7 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
         let widget_window =
             utils::get_window_from_widget(widget_obj).expect("Failed to retrieve window");
 
-        let dialog = gtk::MessageDialog::builder()
-            .transient_for(&widget_window)
-            .message_type(msg.msg_type)
-            .text(msg.msg)
-            .title(msg.msg_type.to_string())
-            .modal(true)
-            .buttons(gtk::ButtonsType::Ok)
-            .build();
-        dialog.connect_response(|dialog, _| dialog.close());
-
-        dialog.show();
+        utils::show_simple_dialog(&widget_window, msg.msg_type, &msg.msg, msg.msg_type.to_string());
         glib::ControlFlow::Continue
     });
 
@@ -737,17 +727,7 @@ fn create_connections_section() -> gtk::Box {
         let widget_window =
             utils::get_window_from_widget(widget_obj).expect("Failed to retrieve window");
 
-        let dialog = gtk::MessageDialog::builder()
-            .transient_for(&widget_window)
-            .message_type(msg.msg_type)
-            .text(msg.msg)
-            .title(msg.msg_type.to_string())
-            .modal(true)
-            .buttons(gtk::ButtonsType::Ok)
-            .build();
-        dialog.connect_response(|dialog, _| dialog.close());
-
-        dialog.show();
+        utils::show_simple_dialog(&widget_window, msg.msg_type, &msg.msg, msg.msg_type.to_string());
         glib::ControlFlow::Continue
     });
 
@@ -993,17 +973,12 @@ fn toggle_service(
         if !msg {
             callback(msg);
 
-            let dialog = gtk::MessageDialog::builder()
-                .transient_for(&widget_window)
-                .message_type(gtk::MessageType::Error)
-                .text(&dialog_text)
-                .title("Error")
-                .modal(true)
-                .buttons(gtk::ButtonsType::Ok)
-                .build();
-            dialog.connect_response(|dialog, _| dialog.close());
-
-            dialog.show();
+            utils::show_simple_dialog(
+                &widget_window,
+                gtk::MessageType::Error,
+                &dialog_text,
+                "Error".to_string(),
+            );
         }
         glib::ControlFlow::Continue
     });
