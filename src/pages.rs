@@ -2,17 +2,20 @@ use crate::application_browser::ApplicationBrowser;
 use crate::data_types::*;
 use crate::utils::PacmanWrapper;
 use crate::{fl, utils};
+
+use std::boxed::Box;
+use std::fmt::Write;
+use std::path::Path;
+use std::str;
+use std::sync::Mutex;
+
 use glib::translate::FromGlib;
 use gtk::{glib, Builder};
 use once_cell::sync::Lazy;
 use phf::phf_ordered_map;
-use std::fmt::Write;
-use std::path::Path;
-use std::sync::Mutex;
 
 use gtk::prelude::*;
 
-use std::str;
 use subprocess::{Exec, Redirection};
 
 static G_LOCAL_UNITS: Lazy<Mutex<SystemdUnits>> = Lazy::new(|| Mutex::new(SystemdUnits::new()));
@@ -937,19 +940,13 @@ pub fn create_appbrowser_page(builder: &Builder) {
     stack.add_named(&viewport, child_name);
 }
 
-fn on_servbtn_clicked(button: &gtk::CheckButton) {
-    // Get action data/type.
-    let action_type: &str;
-    let action_data: &str;
-    let alpm_package_name: &str;
-    let signal_handler: u64;
-    unsafe {
-        action_type = *button.data("actionType").unwrap().as_ptr();
-        action_data = *button.data("actionData").unwrap().as_ptr();
-        alpm_package_name = *button.data("alpmPackage").unwrap().as_ptr();
-        signal_handler = *button.data("signalHandle").unwrap().as_ptr();
-    }
-
+fn toggle_service(
+    action_type: &str,
+    action_data: &str,
+    alpm_package_name: &str,
+    widget_window: gtk::Window,
+    callback: std::boxed::Box<dyn Fn(bool)>,
+) {
     let units_handle = if action_type == "user_service" { &G_GLOBAL_UNITS } else { &G_LOCAL_UNITS }
         .lock()
         .unwrap();
@@ -968,13 +965,17 @@ fn on_servbtn_clicked(button: &gtk::CheckButton) {
     // Create context channel.
     let (tx, rx) = glib::MainContext::channel(glib::Priority::default());
 
+    let dialog_text = fl!("package-not-installed", package_name = alpm_package_name);
+
+    let action_type = action_type.to_owned();
+    let alpm_package_name = alpm_package_name.to_owned();
     // Spawn child process in separate thread.
     std::thread::spawn(move || {
         if !alpm_package_name.is_empty() {
-            if !utils::is_alpm_pkg_installed(alpm_package_name) {
+            if !utils::is_alpm_pkg_installed(&alpm_package_name) {
                 let _ = utils::run_cmd_terminal(format!("pacman -S {alpm_package_name}"), true);
             }
-            if !utils::is_alpm_pkg_installed(alpm_package_name) {
+            if !utils::is_alpm_pkg_installed(&alpm_package_name) {
                 tx.send(false).expect("Couldn't send data to channel");
                 return;
             }
@@ -988,22 +989,14 @@ fn on_servbtn_clicked(button: &gtk::CheckButton) {
         }
     });
 
-    let button_sh = button.clone();
     rx.attach(None, move |msg| {
         if !msg {
-            let widget_window =
-                utils::get_window_from_widget(&button_sh).expect("Failed to retrieve window");
-
-            let sighandle_id_obj =
-                unsafe { glib::signal::SignalHandlerId::from_glib(signal_handler) };
-            button_sh.block_signal(&sighandle_id_obj);
-            button_sh.set_active(msg);
-            button_sh.unblock_signal(&sighandle_id_obj);
+            callback(msg);
 
             let dialog = gtk::MessageDialog::builder()
                 .transient_for(&widget_window)
                 .message_type(gtk::MessageType::Error)
-                .text(fl!("package-not-installed", package_name = alpm_package_name))
+                .text(&dialog_text)
                 .title("Error")
                 .modal(true)
                 .buttons(gtk::ButtonsType::Ok)
@@ -1014,6 +1007,37 @@ fn on_servbtn_clicked(button: &gtk::CheckButton) {
         }
         glib::ControlFlow::Continue
     });
+}
+
+fn on_servbtn_clicked(button: &gtk::CheckButton) {
+    // Get action data/type.
+    let action_type: &str;
+    let action_data: &str;
+    let alpm_package_name: &str;
+    let signal_handler: u64;
+    unsafe {
+        action_type = *button.data("actionType").unwrap().as_ptr();
+        action_data = *button.data("actionData").unwrap().as_ptr();
+        alpm_package_name = *button.data("alpmPackage").unwrap().as_ptr();
+        signal_handler = *button.data("signalHandle").unwrap().as_ptr();
+    }
+
+    let widget_window = utils::get_window_from_widget(button).expect("Failed to retrieve window");
+
+    let button_sh = button.clone();
+    toggle_service(
+        action_type,
+        action_data,
+        alpm_package_name,
+        widget_window,
+        Box::new(move |msg| {
+            let sighandle_id_obj =
+                unsafe { glib::signal::SignalHandlerId::from_glib(signal_handler) };
+            button_sh.block_signal(&sighandle_id_obj);
+            button_sh.set_active(msg);
+            button_sh.unblock_signal(&sighandle_id_obj);
+        }),
+    );
 }
 
 fn on_refreshkeyring_btn_clicked(_: &gtk::Button) {
