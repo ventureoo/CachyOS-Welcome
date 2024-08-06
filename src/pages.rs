@@ -29,10 +29,12 @@ macro_rules! create_gtk_button {
 
 #[macro_export]
 macro_rules! create_tweak_checkbox {
-    ($tweak_msg:literal) => {{
+    ($tweak_msg:literal,$action_data:literal,$action_type:literal,$alpm_pkg_name:literal) => {{
         let temp_btn =
             gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = $tweak_msg));
         temp_btn.set_widget_name($tweak_msg);
+
+        set_tweak_check_data(&temp_btn, $action_data, $action_type, $alpm_pkg_name);
         temp_btn
     }};
 }
@@ -218,6 +220,19 @@ pub fn update_translations(builder: &Builder) {
                 }
             }
         }
+    }
+}
+
+fn set_tweak_check_data(
+    check_btn: &gtk::CheckButton,
+    action_data: &'static str,
+    action_type: &'static str,
+    alpm_package_name: &'static str,
+) {
+    unsafe {
+        check_btn.set_data("actionData", action_data);
+        check_btn.set_data("actionType", action_type);
+        check_btn.set_data("alpmPackage", alpm_package_name);
     }
 }
 
@@ -476,33 +491,22 @@ fn create_options_section() -> gtk::Box {
     label.set_justify(gtk::Justification::Center);
     label.set_text(&fl!("tweaks"));
 
-    let psd_btn = create_tweak_checkbox!("Profile-sync-daemon");
-    let systemd_oomd_btn = create_tweak_checkbox!("Systemd-oomd");
-    let bpftune_btn = create_tweak_checkbox!("Bpftune");
-    let apparmor_btn = create_tweak_checkbox!("Apparmor");
-    let bluetooth_btn = create_tweak_checkbox!("Bluetooth");
-    let ananicy_cpp_btn = create_tweak_checkbox!("Ananicy Cpp");
-
-    unsafe {
-        psd_btn.set_data("actionData", "psd.service");
-        psd_btn.set_data("actionType", "user_service");
-        psd_btn.set_data("alpmPackage", "profile-sync-daemon");
-        systemd_oomd_btn.set_data("actionData", "systemd-oomd.service");
-        systemd_oomd_btn.set_data("actionType", "service");
-        systemd_oomd_btn.set_data("alpmPackage", "");
-        apparmor_btn.set_data("actionData", "apparmor.service");
-        apparmor_btn.set_data("actionType", "service");
-        apparmor_btn.set_data("alpmPackage", "apparmor");
-        bpftune_btn.set_data("actionData", "bpftune.service");
-        bpftune_btn.set_data("actionType", "service");
-        bpftune_btn.set_data("alpmPackage", "bpftune-git");
-        bluetooth_btn.set_data("actionData", "bluetooth.service");
-        bluetooth_btn.set_data("actionType", "service");
-        bluetooth_btn.set_data("alpmPackage", "bluez");
-        ananicy_cpp_btn.set_data("actionData", "ananicy-cpp.service");
-        ananicy_cpp_btn.set_data("actionType", "service");
-        ananicy_cpp_btn.set_data("alpmPackage", "ananicy-cpp");
-    }
+    let psd_btn = create_tweak_checkbox!(
+        "Profile-sync-daemon",
+        "psd.service",
+        "user_service",
+        "profile-sync-daemon"
+    );
+    let systemd_oomd_btn =
+        create_tweak_checkbox!("Systemd-oomd", "systemd-oomd.service", "service", "");
+    let apparmor_btn =
+        create_tweak_checkbox!("Apparmor", "apparmor.service", "service", "apparmor");
+    let bpftune_btn =
+        create_tweak_checkbox!("Bpftune", "bpftune.service", "service", "bpftune-git");
+    let bluetooth_btn =
+        create_tweak_checkbox!("Bluetooth", "bluetooth.service", "service", "bluez");
+    let ananicy_cpp_btn =
+        create_tweak_checkbox!("Ananicy Cpp", "ananicy-cpp.service", "service", "ananicy-cpp");
 
     for btn in &[
         &psd_btn,
