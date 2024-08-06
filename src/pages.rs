@@ -35,6 +35,7 @@ macro_rules! create_tweak_checkbox {
         temp_btn.set_widget_name($tweak_msg);
 
         set_tweak_check_data(&temp_btn, $action_data, $action_type, $alpm_pkg_name);
+        connect_tweak(&temp_btn, $action_data);
         temp_btn
     }};
 }
@@ -234,6 +235,16 @@ fn set_tweak_check_data(
         check_btn.set_data("actionType", action_type);
         check_btn.set_data("alpmPackage", alpm_package_name);
     }
+}
+
+fn connect_tweak(check_btn: &gtk::CheckButton, action_data: &'static str) {
+    let action_data_str = action_data.to_owned();
+    if G_LOCAL_UNITS.lock().unwrap().enabled_units.contains(&action_data_str)
+        || G_GLOBAL_UNITS.lock().unwrap().enabled_units.contains(&action_data_str)
+    {
+        check_btn.set_active(true);
+    }
+    connect_clicked_and_save(check_btn, on_servbtn_clicked);
 }
 
 fn get_nm_connections() -> Vec<String> {
@@ -507,23 +518,6 @@ fn create_options_section() -> gtk::Box {
         create_tweak_checkbox!("Bluetooth", "bluetooth.service", "service", "bluez");
     let ananicy_cpp_btn =
         create_tweak_checkbox!("Ananicy Cpp", "ananicy-cpp.service", "service", "ananicy-cpp");
-
-    for btn in &[
-        &psd_btn,
-        &systemd_oomd_btn,
-        &apparmor_btn,
-        &bpftune_btn,
-        &bluetooth_btn,
-        &ananicy_cpp_btn,
-    ] {
-        let data: &str = unsafe { *btn.data("actionData").unwrap().as_ptr() };
-        if G_LOCAL_UNITS.lock().unwrap().enabled_units.contains(&String::from(data))
-            || G_GLOBAL_UNITS.lock().unwrap().enabled_units.contains(&String::from(data))
-        {
-            btn.set_active(true);
-        }
-        connect_clicked_and_save(btn, on_servbtn_clicked)
-    }
 
     topbox.pack_start(&label, true, false, 1);
     box_collection.pack_start(&psd_btn, true, false, 2);
