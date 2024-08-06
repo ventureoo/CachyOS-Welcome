@@ -18,6 +18,15 @@ use gtk::prelude::*;
 
 use subprocess::{Exec, Redirection};
 
+#[macro_export]
+macro_rules! create_gtk_button {
+    ($message_id:literal) => {{
+        let temp_btn = gtk::Button::with_label(&fl!($message_id));
+        temp_btn.set_widget_name($message_id);
+        temp_btn
+    }};
+}
+
 static G_LOCAL_UNITS: Lazy<Mutex<SystemdUnits>> = Lazy::new(|| Mutex::new(SystemdUnits::new()));
 static G_GLOBAL_UNITS: Lazy<Mutex<SystemdUnits>> = Lazy::new(|| Mutex::new(SystemdUnits::new()));
 
@@ -225,31 +234,17 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
     label.set_justify(gtk::Justification::Center);
     label.set_text(&fl!("fixes"));
 
-    let removelock_btn = gtk::Button::with_label(&fl!("remove-lock-title"));
-    let reinstall_btn = gtk::Button::with_label(&fl!("reinstall-title"));
-    let refreshkeyring_btn = gtk::Button::with_label(&fl!("refresh-keyrings-title"));
-    let update_system_btn = gtk::Button::with_label(&fl!("update-system-title"));
-    let remove_orphans_btn = gtk::Button::with_label(&fl!("remove-orphans-title"));
-    let clear_pkgcache_btn = gtk::Button::with_label(&fl!("clear-pkgcache-title"));
-    let rankmirrors_btn = gtk::Button::with_label(&fl!("rankmirrors-title"));
-    let dnsserver_btn = gtk::Button::with_label(&fl!("dnsserver-title"));
-    let install_gaming_btn = gtk::Button::with_label(&fl!("install-gaming-title"));
-    let install_snapper_btn = gtk::Button::with_label(&fl!("install-snapper-title"));
-    let install_spoof_dpi_btn = gtk::Button::with_label(&fl!("install-spoof-dpi-title"));
-
-    {
-        removelock_btn.set_widget_name("remove-lock-title");
-        reinstall_btn.set_widget_name("reinstall-title");
-        refreshkeyring_btn.set_widget_name("refresh-keyrings-title");
-        update_system_btn.set_widget_name("update-system-title");
-        remove_orphans_btn.set_widget_name("remove-orphans-title");
-        clear_pkgcache_btn.set_widget_name("clear-pkgcache-title");
-        rankmirrors_btn.set_widget_name("rankmirrors-title");
-        dnsserver_btn.set_widget_name("dnsserver-title");
-        install_gaming_btn.set_widget_name("install-gaming-title");
-        install_snapper_btn.set_widget_name("install-snapper-title");
-        install_spoof_dpi_btn.set_widget_name("install-spoof-dpi-title");
-    }
+    let removelock_btn = create_gtk_button!("remove-lock-title");
+    let reinstall_btn = create_gtk_button!("reinstall-title");
+    let refreshkeyring_btn = create_gtk_button!("refresh-keyrings-title");
+    let update_system_btn = create_gtk_button!("update-system-title");
+    let remove_orphans_btn = create_gtk_button!("remove-orphans-title");
+    let clear_pkgcache_btn = create_gtk_button!("clear-pkgcache-title");
+    let rankmirrors_btn = create_gtk_button!("rankmirrors-title");
+    let dnsserver_btn = create_gtk_button!("dnsserver-title");
+    let install_gaming_btn = create_gtk_button!("install-gaming-title");
+    let install_snapper_btn = create_gtk_button!("install-snapper-title");
+    let install_spoof_dpi_btn = create_gtk_button!("install-spoof-dpi-title");
 
     // Create context channel.
     let (dialog_tx, dialog_rx) = glib::MainContext::channel(glib::Priority::default());
@@ -439,8 +434,7 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
         Exec::cmd("pgrep").args(&["kwin_wayland"]).stdout(subprocess::NullFile).join()
     {
         if pgrep_res.success() {
-            let kwinw_debug_btn = gtk::Button::with_label(&fl!("show-kwinw-debug-title"));
-            kwinw_debug_btn.set_widget_name("show-kwinw-debug-title");
+            let kwinw_debug_btn = create_gtk_button!("show-kwinw-debug-title");
             kwinw_debug_btn.connect_clicked(move |_| {
                 // Spawn child process in separate thread.
                 std::thread::spawn(move || {
@@ -593,10 +587,8 @@ fn create_connections_section() -> gtk::Box {
     servers_label.set_justify(gtk::Justification::Left);
     servers_label.set_text(&fl!("select-dns-server"));
     servers_label.set_widget_name("select-dns-server");
-    let apply_btn = gtk::Button::with_label(&fl!("apply"));
-    let reset_btn = gtk::Button::with_label(&fl!("reset"));
-    apply_btn.set_widget_name("apply");
-    reset_btn.set_widget_name("reset");
+    let apply_btn = create_gtk_button!("apply");
+    let reset_btn = create_gtk_button!("reset");
 
     let combo_conn = {
         let store = gtk::ListStore::new(&[String::static_type()]);
