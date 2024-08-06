@@ -233,6 +233,13 @@ fn get_nm_connections() -> Vec<String> {
     connections.split('\n').filter(|x| !x.is_empty()).map(String::from).collect::<Vec<_>>()
 }
 
+fn launch_kwin_debug_window() {
+    let _ = Exec::cmd("qdbus6")
+        .args(&["org.kde.KWin", "/KWin", "org.kde.KWin.showDebugConsole"])
+        .join()
+        .unwrap();
+}
+
 fn create_fixes_section(builder: &Builder) -> gtk::Box {
     let topbox = gtk::Box::new(gtk::Orientation::Vertical, 2);
     let button_box_f = gtk::Box::new(gtk::Orientation::Horizontal, 10);
@@ -448,10 +455,8 @@ fn create_fixes_section(builder: &Builder) -> gtk::Box {
             kwinw_debug_btn.connect_clicked(move |_| {
                 // Spawn child process in separate thread.
                 std::thread::spawn(move || {
-                    let _ = Exec::cmd("qdbus6")
-                        .args(&["org.kde.KWin", "/KWin", "org.kde.KWin.showDebugConsole"])
-                        .join()
-                        .unwrap();
+                    // do we even need to start that in separate thread. should be fine without
+                    launch_kwin_debug_window();
                 });
             });
             button_box_frth.pack_end(&kwinw_debug_btn, true, true, 2);
