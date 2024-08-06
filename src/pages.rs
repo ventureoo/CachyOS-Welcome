@@ -27,6 +27,16 @@ macro_rules! create_gtk_button {
     }};
 }
 
+#[macro_export]
+macro_rules! create_tweak_checkbox {
+    ($tweak_msg:literal) => {{
+        let temp_btn =
+            gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = $tweak_msg));
+        temp_btn.set_widget_name($tweak_msg);
+        temp_btn
+    }};
+}
+
 static G_LOCAL_UNITS: Lazy<Mutex<SystemdUnits>> = Lazy::new(|| Mutex::new(SystemdUnits::new()));
 static G_GLOBAL_UNITS: Lazy<Mutex<SystemdUnits>> = Lazy::new(|| Mutex::new(SystemdUnits::new()));
 
@@ -461,26 +471,12 @@ fn create_options_section() -> gtk::Box {
     label.set_justify(gtk::Justification::Center);
     label.set_text(&fl!("tweaks"));
 
-    let psd_btn =
-        gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = "Profile-sync-daemon"));
-    let systemd_oomd_btn =
-        gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = "Systemd-oomd"));
-    let bpftune_btn = gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = "Bpftune"));
-    let apparmor_btn =
-        gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = "Apparmor"));
-    let bluetooth_btn =
-        gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = "Bluetooth"));
-    let ananicy_cpp_btn =
-        gtk::CheckButton::with_label(&fl!("tweak-enabled-title", tweak = "Ananicy Cpp"));
-
-    {
-        psd_btn.set_widget_name("Profile-sync-daemon");
-        systemd_oomd_btn.set_widget_name("Systemd-oomd");
-        apparmor_btn.set_widget_name("Apparmor");
-        bpftune_btn.set_widget_name("Bpftune");
-        bluetooth_btn.set_widget_name("Bluetooth");
-        ananicy_cpp_btn.set_widget_name("Ananicy Cpp");
-    }
+    let psd_btn = create_tweak_checkbox!("Profile-sync-daemon");
+    let systemd_oomd_btn = create_tweak_checkbox!("Systemd-oomd");
+    let bpftune_btn = create_tweak_checkbox!("Bpftune");
+    let apparmor_btn = create_tweak_checkbox!("Apparmor");
+    let bluetooth_btn = create_tweak_checkbox!("Bluetooth");
+    let ananicy_cpp_btn = create_tweak_checkbox!("Ananicy Cpp");
 
     unsafe {
         psd_btn.set_data("actionData", "psd.service");
