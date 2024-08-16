@@ -510,8 +510,6 @@ fn create_options_section() -> gtk::Box {
     );
     let systemd_oomd_btn =
         create_tweak_checkbox!("Systemd-oomd", "systemd-oomd.service", "service", "");
-    let apparmor_btn =
-        create_tweak_checkbox!("Apparmor", "apparmor.service", "service", "apparmor");
     let bpftune_btn =
         create_tweak_checkbox!("Bpftune", "bpftune.service", "service", "bpftune-git");
     let bluetooth_btn =
@@ -522,7 +520,6 @@ fn create_options_section() -> gtk::Box {
     topbox.pack_start(&label, true, false, 1);
     box_collection.pack_start(&psd_btn, true, false, 2);
     box_collection_s.pack_start(&systemd_oomd_btn, true, false, 2);
-    box_collection.pack_start(&apparmor_btn, true, false, 2);
     box_collection_s.pack_start(&bpftune_btn, true, false, 2);
     box_collection.pack_start(&ananicy_cpp_btn, true, false, 2);
     box_collection_s.pack_start(&bluetooth_btn, true, false, 2);
