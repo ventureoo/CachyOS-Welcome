@@ -1,96 +1,94 @@
-<big>CachyOS 24.07</big>
+<big>CachyOS 24.08</big>
 
-Dies ist unsere achte Veröffentlichung in diesem Jahr, und wir sind sehr stolz, ein neues optimiertes Repository ankündigen zu können.
-Ab dieser Veröffentlichung stellen wir ein **Zen4** optimiertes Repository bereit. Dieses Repository wird bei neuen Installationen für Zen4- und Zen5-CPUs automatisch verwendet, um die bestmögliche Leistung zu gewährleisten.
+Dies ist unsere 9. Veröffentlichung in diesem Jahr, mit Verbesserungen bei der Hardwareerkennung und Infrastruktur-Erweiterungen.
 
-Das znver4-Target bietet eine Vielzahl zusätzlicher avx512-Erweiterungen und anderer Instruktionen. Hier finden Sie eine Liste der zusätzlichen vom Compiler verwendeten Instruktionen:
-`abm, adx, aes, avx512bf16, avx512bitalg, avx512ifma, avx512vbmi, avx512vbmi2, avx512vnni, avx512vpopctndq, clflushopt, clwb, clzero, fsgsbase, gfni, mwaitx, pclmul, pku. prfchw, rpdid, rdrnd, rdseed, sha, sse4a, vaes, vockmulqdq, wbnoinvd, savec, xsaveopt, xsaves`
+Ab dieser Version wird die Hardwareerkennung automatisch die offenen NVIDIA-Module verwenden. Benutzer können zu geschlossenen Modulen zurückkehren, indem sie `sudo pacman -S linux-cachyos-nvidia` ausführen.
 
-Das CachyOS-Hardware-Erkennungstool (chwd) kann nun "GC" für AMD-Karten erkennen. Dadurch können wir offiziell ROCm-unterstützte Karten in unserer AI-SDK-Installationsvariante automatisch unterstützen und so konfigurieren, dass sie out-of-the-box für allgemeine KI-Anwendungen und -Nutzungen funktionieren. Wir arbeiten weiterhin mit KI-Enthusiasten zusammen, um die vorinstallierten Pakete und die ausgelieferte Konfiguration in unserer AI-SDK-Installationsvariante zu verbessern. Darüber hinaus wird chwd nun den libva-Treiber als Standard für unterstützte Nvidia-Hardware konfigurieren und die Variable korrekt im Profil exportieren.
+Wir haben auch den neuesten NVIDIA Beta-Treiber (560) nach umfangreichen Tests integriert. Dieser Treiber scheint nach seiner zweiten Beta-Veröffentlichung in einem stabilen Zustand zu sein.
 
-Unser Standard-Kernel (linux-cachyos) und sched-ext-Kernel (linux-cachyos-sched-ext) haben jetzt ein Debug-Paket im Repository, das zur Fehlerbehebung bei Kernelproblemen oder zu Entwicklungszwecken verwendet werden kann.
+Die Cosmic Desktop-Umgebung ist jetzt zur Installation verfügbar. Wir werden der Upstream-Veröffentlichung (Alpha 1) für die Paketierung folgen. Pakete basierend auf dem neuesten Commit sind verfügbar, werden aber nicht für die Installation verwendet. Bestehende Benutzer können Cosmic auf ihrem aktuellen Setup mit dem Befehl installieren: `sudo pacman -S cosmic-session`. Dies installiert die Basispakete für die Ausführung von Cosmic. Zusätzliche Pakete wie cosmic-text-editor, cosmic-terminal und cosmic-store sind ebenfalls verfügbar.
 
-Unsere Kernel unterstützen jetzt die "AMD CPB Boost"-Funktion, mit der das Boosting pro Kern aktiviert oder deaktiviert werden kann. Der power-profiles-daemon (ppd) übernimmt dies jetzt automatisch, wenn das "Energiespar"-Profil verwendet wird. Es setzt auch die niedrigste lineare Frequenz auf eine höhere Frequenz, sodass es bei Leerlauf des CPUs zu weniger Frequenzabfällen kommt. Dies ist im "ausgewogenen" und "leistungsstarken" Modus aktiv. Das Halten der niedrigsten linearen Frequenz verbessert sowohl die Latenz als auch die 1%-Lows beim Gaming.
+Unsere Infrastruktur hat bedeutende Verbesserungen erfahren:
+Wir freuen uns, bekannt zu geben, dass CDN77 uns mit einem weltweiten Cache-CDN sponsert. Dies verbessert die Verbindungsgeschwindigkeiten für Benutzer erheblich, insbesondere in Regionen, die wir zuvor mit unseren bestehenden Mirrors nicht effektiv bedienen konnten. Dieses CDN wurde etwa 3 Wochen lang von uns und der Community getestet und erhielt positives Feedback.
 
-Der Kernel-Manager hat jetzt eine GUI zur Verwaltung des sched-ext-Schedulers. Benutzer können nun einfach den scx-Dienst aktivieren/deaktivieren, zwischen verschiedenen sched-ext-Schedulern wechseln und auch Befehlszeilenflags für diese setzen.
+Wir bieten jetzt einen Arch Linux-Mirror und Cache-CDN (CDN77) an, der während der Installation standardmäßig verwendet wird. Dies löst Probleme mit der Mirror-Rangfolge, die oft veraltete Mirrors auswählte, was zu Abhängigkeitsproblemen und fehlgeschlagenen Installationen führte. Diese Lösung gewährleistet eine schnelle Paketlieferung vom CDN und vermeidet gleichzeitig diese Probleme.
+Zwei von uns gehostete Fallback-Mirrors werden ebenfalls verwendet, zusammen mit einem Tier-1-Mirror von Arch Linux.
 
-Der Userspace-Kernel-Samepage-Merging-Daemon wurde entfernt, da er eine recht hohe CPU-Auslastung auf schwächeren CPUs hatte. Wir haben uksmd durch die Übernahme der "MemoryKSM"-Funktion von systemd ersetzt. Dies kann jetzt einfach mit dem Befehl "ksmctl --enable" aktiviert werden.
+Der Kernel-Manager hat mehrere neue Fehlerbehebungen und Änderungen erhalten. Die sched-ext-Konfiguration unterstützt jetzt das Übergeben benutzerdefinierter Flags über die GUI an jeden Scheduler. NVIDIA-Open-Module für benutzerdefinierte Kernel wurden hinzugefügt, und es werden nun die zuletzt verwendeten Optionen für benutzerdefinierte Kernel gespeichert. Fehlerbehebungen für die Behandlung von Passwortabfragen bei Verzögerungen und das Bauen mit einem benutzerdefinierten pkgname mit aktiviertem LTO und NVIDIA-Modulen wurden ebenfalls implementiert.
 
-Cutefish wurde aus der Desktop-Auswahl entfernt, da es seit über ~1,5 Jahren nicht mehr gepflegt wurde und wir keinen weiteren Support dafür bieten können. Benutzer können es jedoch weiterhin aus den Repositories installieren.
+Wir haben ein Skript hinzugefügt, um Secure Boot einfach zu handhaben, zusammen mit einer detaillierten Wiki-Seite, die die Verwendung von `sbctl` erklärt.
 
-kwin wurde für Tearingsupport gepatcht.
+Das cachy-chroot-Programm kann jetzt automatisch Benutzerpartitionen von der Live-ISO einbinden, was den Prozess des Chrootens in das System bei auftretenden Problemen vereinfacht. Es überprüft montierte Dateisysteme und Subvolumes in `fstab`, bindet sie an den richtigen Pfaden ein und chrootet in das System. LUKS-Unterstützung wurde ebenfalls zu cachy-chroot hinzugefügt.
 
-Es gibt drei neue Ergänzungen zu den CachyOS-Mirrors. Zwei befinden sich in China und werden von der TUNA-Universität mit 20 Gbit Konnektivität gehostet, der zweite wird von einem Teammitglied in Österreich mit 2,5 Gbit gehostet und der dritte wird vom eScience Center, Nanjing University in China, gehostet. Vielen Dank an alle Mirror-Hosts, die die Verfügbarkeit für alle Benutzer weltweit weiter erhöhen.
+Die CachyOS-Hardwareerkennung wurde mit Fehlerbehebungen bei der PRIME/Hybrid-Profilerkennung verbessert, die jetzt auf Gerätenamen basiert, um mobile Chips einfacher zu erkennen. Der RTD3-Workaround wurde aufgrund von Problemen auf einigen Setups entfernt, mit einer Anleitung im Wiki für die manuelle Anwendung, falls erforderlich.
 
-Calamares basiert jetzt auf der neuesten Version 3.3.8, und wir haben eine Reihe von Fehlerbehebungen zur Installation hinzugefügt. Die Spiegel-Rangfolge für die Basisinstallation verwendet nun nur noch Tier-1-Spiegel von Arch Linux. Das neueste archlinux-keyring wird vor Beginn der Installation installiert, um Probleme mit dem archlinux-keyring zu vermeiden. Nicht verwendete CachyOS-Repositories werden nun aus der Konfiguration entfernt, und der Kernel-Parameter `copytoram` wurde von 'yes' auf 'auto' geändert, um Probleme auf Maschinen mit weniger RAM zu vermeiden.
+Allgemeine Fehlerbehebungen wurden an der ISO, dem Spielleistungsskript, Calamares und der Mirror-Rangfolge auf der Live-ISO vorgenommen.
 
-Darüber hinaus sieht der 6.10-Kernel vielversprechend aus und sollte bald in unsere Repositories gelangen. Ebenso befindet sich der neue Nvidia-Treiber in einem guten Zustand, und wir haben die GSP-Firmware wieder aktiviert.
-
-Wir haben auch begonnen, an unserem eigenen Installations-Framework und einem GUI-Installer zu arbeiten. Stay tuned!
+Die Handheld-Edition unterstützt jetzt offiziell den Ally X, dank Luke Jones' umfangreicher Arbeit an diesen Patches und Tests durch ChimeraOS und Bazzite. Die Geräteunterstützung wurde von mehreren CachyOS-Benutzern verifiziert.
+KWins libei wird jetzt für die Wayland-Eingabeemulation anstelle von libextest verwendet. Fehlerbehebungen wurden hinzugefügt, um die Verwendung von PackageKit in der Handheld-Edition zu blockieren, da es im Allgemeinen Probleme auf Arch Linux-basierten Systemen verursacht.
 
 <big>Features:</big>
 
-- Repository: Einführung eines Zen 4 optimierten Repositorys, das für Zen4- und Zen5-CPUs verwendet wird
-- ISO: Hinzufügen einer automatischen Architekturprüfung für das Zen4/Zen5-Repository
-- chwd: Hinzufügen der GC-Unterstützung für AMD-GPUs, dies hilft bei der Erkennung offiziell unterstützter ROCm-GPUs
-- chwd: Verwenden des libva-nvidia-Treibers auf unterstützten Karten
-- ksmctl: Einführung eines Tools zum Aktivieren/Deaktivieren von KSM: ksmctl --enable
-- kernel: Für den "linux-cachyos"-Kernel ist jetzt ein "linux-cachyos-dbg"-Paket verfügbar, das ein unstripped vmlinux für Debugging-Zwecke enthält
-- kernel: AMD CPB-Boost ist jetzt verfügbar und der power-profiles-daemon ist gepatcht. Wenn das "Energiespar"-Profil eingestellt ist, wird das Boosting auf AMD-CPUs deaktiviert
-- kernel: Hinzufügen eines Energiespar-Patches für AMD-SoCs für Videowiedergabe
-- kernel-manager: Hinzufügen der Unterstützung zur Verwaltung von sched-ext-Schedulern und Abrufen von Informationen über die GUI
-- steam/proton: Es gibt jetzt ein "game-performance"-Skript, das zu den Startoptionen von Steam hinzugefügt werden kann
-- power-profiles: Bei AMD Pstate-unterstützten CPUs wird die niedrigste lineare Frequenz jetzt höher eingestellt, was die Latenz und 1%-Lows verbessern kann
-- kwin: Hinzufügen eines Back-Ports für Tearing, der getestet wurde. Bei NVIDIA funktioniert es nur bei nativen Wayland-Anwendungen
-- netinstall: Cutefish wurde als installierbare Desktop-Umgebung entfernt
-- Spiegel: Hinzufügen von Spiegeln in Österreich und China, der China-Spiegel wird von der TUNA-Universität gehostet. Dies sollte vielen Benutzern aus China helfen
-- Paket-Updates: linux-cachyos 6.9.9, mesa 24.1.3, NVIDIA 555.58.02, Plasma 6.1.2, LLVM 18.1.8
+- chwd: NVIDIA verwendet jetzt standardmäßig das offene Modul für unterstützte Karten
+- Desktop: Cosmic Desktop-Umgebung zu den Installationsoptionen hinzugefügt
+- NVIDIA: Neuester 560 Beta-Treiber ist jetzt Standard; egl-wayland gepatcht, um Abstürze in Firefox und anderen Anwendungen zu beheben
+- Mirror: CDN77 sponserte CachyOS mit Object Storage mit weltweitem Cache, was die Verbindungsgeschwindigkeiten für Benutzer erheblich verbessert
+- Mirror: CachyOS bietet jetzt seinen eigenen Arch Linux-Mirror an, um Synchronisierungsprobleme zu vermeiden, als Standard während der Installation zusammen mit Fallback-Mirrors eingestellt
+- SecureBoot: Skript und Tutorial im Wiki für einfache Secure Boot-Unterstützung eingeführt
+- cachy-chroot: Auto-Mount über fstab für vereinfachtes Chrooten hinzugefügt
+- cachy-chroot: Unterstützung für LUKS-Verschlüsselung implementiert
+- kernel-manager: Unterstützung für das Setzen von sched-ext-Flags in der sched-ext-Konfiguration hinzugefügt
+- kernel-manager: Option zum Bauen von nvidia-open eingeführt
+- kernel-manager: Option zum Merken der zuletzt verwendeten Optionen auf der Konfigurationsseite hinzugefügt
+- Paket-Updates: linux-cachyos 6.10.5, mesa 24.2.0, Plasma 6.1.4, NVIDIA 560.31.02
 
 <big>Bug-Fixes:</big>
 
-- ISO: Setze copytoram auf automatisch statt auf ja
-- Installationsstart: Installiere das neueste archlinux-keyring, bevor die Installation beginnt, um Probleme beim Abrufen des archlinux-keyring im chroot zu vermeiden
-- Spiegel-Rangfolge: Rangfolge nur für Tier-1-Spiegel zur Installationszeit
-- pacman.conf: Entfernen nicht verwendeter pacman-Repositories
-- cachy-chroot: Zeige keine .snapshot-Untervolumes an
-- Calamares: Verwenden Sie nicht das Modul "Preservefiles", da Benutzer von Problemen berichten
+- chwd: Verbesserte PRIME-Profilerkennung basierend auf Gerätenamen
+- chwd: RTD3-Workaround aufgrund von Problemen auf einigen Setups entfernt
+- cachyos-rate-mirrors: Mirror-Rangfolge bei Ausführung auf Live-ISO deaktiviert
+- cachy-chroot: Behebt einen Absturz, wenn eine Partition keinen gültigen fstype oder uuid hatte (z.B. Microsoft Recovery Partition)
+- calamares: Keyring-Initialisierung überarbeitet
+- kernel-manager: Unterstützung für das Bauen von benutzerdefinierten pkgbase mit aktivierten LTO-Kerneln und Modulen behoben
+- kernel-manager: Verzögerung bei Passwortabfrage behoben
+- ISO: radeon.modeset=1 durch amdgpu.modeset=1 für moderne GPUs ersetzt
+- game-performance: Verhindert Fehler, wenn Profil nicht verfügbar ist
 
 <big>Changelog für die Handheld-Edition:</big>
 
-- Hinzufügen einer Konfigurationsdatei zum Anwenden verschiedener Skalierungen, '/home/$USER/.config/deckscale'
-- Machen Sie den GameMode-Wechsel robuster
-- Aktualisierte Wifi/Bluetooth-Firmware für Steam Deck
-- Implementierung von Auto Mount für GameMode
-- Hinzufügen von gamescope-session-Quirks für Wine-CPU-Topologie, HDR und Hintergrundbeleuchtung
-- Fehlerbehebung bei der Bildwiederholfrequenz-Auswahl
-- Aktualisiert jupiter-hw-support, steamdeck-dsp, jupiter-fan-control, gamescope-session-git
+- Geräteunterstützung: Unterstützung für Ally X hinzugefügt, dank Luke Jones
+- libei: Unterstützung für libei implementiert, ersetzt libextest
+- packagekit: Installation von packagekit blockiert, um Probleme mit Systemaktualisierungen über Discover zu vermeiden
+- hook: Pacman-Hook hinzugefügt, um Konflikte mit nativ kompilierten Proton-Versionen zu vermeiden und potenzielle Probleme zu verhindern
+- jupiter-fan-control, steamdeck-dsp und Steam Deck Firmware aktualisiert
 
 **Manuelle Änderungen für bestehende Benutzer:**
 
-CachyOS ist ein rolling System, daher reicht das Aktualisieren des Systems über 'sudo pacman -Syu' meistens aus.
-Da wir ein neues Repository eingeführt haben, möchten neue Benutzer mit einer Zen 4 CPU möglicherweise migrieren. Hier finden Sie eine Anleitung dazu:
-https://discuss.cachyos.org/t/zen-4-5-optimized-repository-testing/713?u=ptr1337
+Keine speziellen Änderungen erforderlich.
+Benutzer mit einer NVIDIA-Karte, die das Open Module unterstützt (20xx oder höher), können den nvidia-open-Treiber mit folgendem Befehl verwenden:
+`sudo pacman -S linux-cachyos-nvidia-open`
 
 <big>Download:</big>
 
-Laden Sie Ihre Kopie des neuesten ISO von unseren Spiegeln auf SourceForge herunter:
+Holen Sie sich Ihre Kopie der neuesten ISO von unseren Mirrors auf SourceForge:
 
-* CDN: https://iso.cachyos.org/240714/cachyos-desktop-linux-240714.iso
-* Deutschland: https://mirror.cachyos.org/ISO/240714/cachyos-desktop-linux-240714.iso
-* USA: https://us.cachyos.org/ISO/240714/cachyos-desktop-linux-240714.iso
-* China: https://mirrors.tuna.tsinghua.edu.cn/cachyos/240714/cachyos-desktop-linux-240714.iso
+* CDN: https://iso.cachyos.org/desktop/240817/cachyos-desktop-linux-240817.iso
+* Deutschland: https://mirror.cachyos.org/ISO/desktop/240817/cachyos-desktop-linux-240817.iso
+* USA: https://us.cachyos.org/ISO/240817/desktop/cachyos-desktop-linux-240817.iso
+* China: https://mirrors.tuna.tsinghua.edu.cn/cachyos/desktop/240817/cachyos-desktop-linux-240817.iso
 * https://sourceforge.net/projects/cachyos-arch/files
 
-Handheld Edition:
-* https://iso.cachyos.org/240714/cachyos-handheld-linux-240714.iso
+Handheld-Edition:
+
+* https://iso.cachyos.org/handheld/240817/cachyos-handheld-linux-240817.iso
 
 **Unterstützen Sie uns:**
 
-Ihre Beiträge helfen uns, unsere Server zu warten. Erwägen Sie, CachyOS zu unterstützen über:
+Ihre Beiträge helfen uns, unsere Server zu unterhalten. Erwägen Sie, CachyOS zu unterstützen über:
 
 * PayPal: https://paypal.me/pttrr
 * Patreon: https://www.patreon.com/CachyOS
 
-Vielen Dank für Ihre Unterstützung!
+Vielen Dank für Ihre anhaltende Unterstützung!
 
 <b>Das CachyOS-Team</b>
